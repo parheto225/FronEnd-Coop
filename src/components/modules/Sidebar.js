@@ -413,7 +413,44 @@ function Sidebar({sideID,parent}){
                                 {/* Campagnes */}
                                 </span></div>
                           </Link>
-                      </div> 
+                      </div>
+
+                      <div className="nav-item-wrapper">
+                          <div className="d-flex align-items-center mt-3">
+                            <span className="">
+                              <span></span>
+                            </span><span className="nav-link-text-wrapper"><span className="nav-link-text"  style={{
+                              marginLeft: "20px",
+                              marginRight: "",
+                              marginTop: "15px",                              
+                              color: "#e9a800",                              
+                              fontFamily: 'Inter, Helvetica',
+                              fontSize: '18px',
+                              fontWeight: "700",
+                              lineHeight: "normal",                                                        
+                              }}
+                            >  {t("ENQUETES")}  
+                              {/* PARAMETRES  */}
+                              </span></span>
+                          </div>
+                      </div>
+
+                      <div className="nav-item-wrapper">
+                          <Link target='_blank' className="nav-link" to="/enquetes/" data-bs-toggle="" aria-expanded="false">
+                                <div className="d-flex align-items-center"><span className="nav-link-text" style={{
+                                        color: "#94a91b",                                        
+                                        fontFamily: "Inter, Helvetica",
+                                        fontSize: "16px",
+                                        fontWeight: "400",
+                                        lineHeight: "normal", 
+                                      }}>
+                                <i className="text-start" style={{marginLeft: "-20px", marginRight: "10px"}}>
+                                    <img src={IconPlanting} width="12%" height="100%" alt=""/>
+                                </i> {t("Liste des enquêtes")}
+                                  {/* Géoportail planting */}
+                                  </span></div>
+                            </Link>
+                      </div>
 
                       <div className="nav-item-wrapper">
                           <div className="d-flex align-items-center mt-3">

@@ -43,6 +43,7 @@ import DetailFormations from './modules/cooperatives/coop/DetailFormation';
 import LoadingScreen from './auth/LoadingScreen';
 
 import Points from './modules/cooperatives/Points';
+import ListeEnquetes from './modules/enquete/pages/ListeEnquetes';
 
 // Lazy load uniquement pour Login
 const NewConnexion = lazy(() => import('./auth/NewLogin'));
@@ -111,7 +112,8 @@ function Main(){
                 <Route path="/points" element={<Points />} />
                 <Route path="/formations/" element={<AllFormations />} />
                 <Route path="/formations/:id" element={<DetailFormations />} />
-                
+                {/*MODULE ENQUETE*/}
+                <Route path="/enquetes/" element={<ListeEnquetes />} />
             </Switch>
         </div>
     )

@@ -3,3 +3,5 @@ export default function BaseUrl(){
     // return "http://127.0.0.1:8000/api";
     return "https://coop-api.akidompro.com/api";
 }
+
+export const secondBaseUrl = "http://127.0.0.1:8000/api-mobile";

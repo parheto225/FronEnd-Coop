@@ -1,0 +1,21 @@
+.icon-style {
+  height: 40px;
+  width: 40px;
+  /* padding-top: 8px; */
+  /* font-size: 20px; */
+  /* font-weight: bold; */
+  background-color: #f0f0f0;
+  border-radius: 50%;
+  color: #94A91B;
+}
+
+.icon-style2 {
+  height: 24px;
+  width: 24px;
+  padding: 8px 8px 8px 8px; 
+  /* font-size: 15px; */
+  /* font-weight: bold; */
+  background-color: #f0f0f0;
+  border-radius: 50%;
+  color: #94A91B;
+}
