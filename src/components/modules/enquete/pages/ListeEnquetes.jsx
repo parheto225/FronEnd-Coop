@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import { useContext } from "react";
+import { EnqueteContext } from "../../../context";
 import Content from "../../../Content";
-import axios from "axios";
-import { secondBaseUrl } from "../../../config/baseUrl";
 import "../../../assets/style/SelectCamapgne.css";
 import "../../../assets/style/icon.css";
 import {ButtonAdd, ButtonDownload} from "../../../assets/style/Buttons";
@@ -9,34 +11,25 @@ import { TableStyled } from "../../../assets/style/TableStyled";
 
 import SelectCampagne from "../composants/SelectCampagne";
 import TitrePage from "../composants/TitrePage";
+import ModalDetailEnquete from "../composants/ModalDetailEnquete";
+import ModalQuestionEnquete from "../composants/ModalQuestionEnquete";
+import ModalReponseEnquete from "../composants/ModalReponseEnquete";
 
 function ListeEnquetes() {
-      const [enquetes, setEnquetes] = useState([]);
+      const {enquetes, setEnquetes} = useContext(EnqueteContext);
       const [filteredEnquetes, setFilteredEnquetes] = useState([]);
 
   useEffect(() => {
-    try {
-      fetchEnquetes();
-    } catch (error) {
-      console.log("Error fetching enquetes:", error);
-    }
-  }, []);
+    setFilteredEnquetes(enquetes);
+  }, [enquetes]);
 
-
-  async function fetchEnquetes(){
-  const resp  = await axios.get(`${secondBaseUrl}/enquete/get_enquetes/?technicien_tel=0767623025`);
-  const  listeEnq  = resp.data;
-  setEnquetes(listeEnq.data);
-  setFilteredEnquetes(listeEnq.data);
-};
-
-function handleSelectChange(event) {
-    const selectedCampagneId = parseInt(event.target.value);
-    const filtered = selectedCampagneId === 0 ? enquetes : enquetes.filter(enquete => {
-        return enquete.campagne.id === selectedCampagneId;
-    });
-    setFilteredEnquetes(filtered);
-}
+  function handleSelectChange(event) {
+      const selectedCampagneId = parseInt(event.target.value);
+      const filtered = selectedCampagneId === 0 ? enquetes : enquetes.filter(enquete => {
+          return enquete.campagne.id === selectedCampagneId;
+      });
+      setFilteredEnquetes(filtered);
+  }
 
   return (
     <Content>
@@ -58,7 +51,6 @@ function handleSelectChange(event) {
             </div>
         </div>
       <div>
-        {/* <h1>Liste des Enquêtes</h1> */}
         <div className="table-responsive">
           <TableStyled className="table">
             <thead>
@@ -77,8 +69,10 @@ function handleSelectChange(event) {
                   <td>{enquete.libelle}</td>
                   <td>{enquete.campagne.libelle}</td>
                   <td>{enquete.est_ouverte ? "Ouverte" : "Fermée"}</td>
-                  <td>
-                    <button className="btn btn-success btn-sm">Voir</button>
+                  <td className="icon-disposition">
+                    <Link to={`/enquetes/${enquete.id}`}><i className="fa fa-eye icon-action-style"></i></Link>
+                    <Link to={`#`}><i className="fa-solid fa-question icon-action-style"></i></Link>
+                    <Link to={`#`}><i className="fa-solid fa-comment icon-action-style"></i></Link>
                   </td>
                 </tr>
               ))}
@@ -90,3 +84,8 @@ function handleSelectChange(event) {
   );
 }
 export default ListeEnquetes;
+
+ListeEnquetes.propTypes = {
+    enquetes: PropTypes.array,
+    setEnquetes: PropTypes.func,
+};

@@ -1,9 +1,6 @@
 .icon-style {
   height: 40px;
   width: 40px;
-  /* padding-top: 8px; */
-  /* font-size: 20px; */
-  /* font-weight: bold; */
   background-color: #f0f0f0;
   border-radius: 50%;
   color: #94A91B;
@@ -13,9 +10,19 @@
   height: 24px;
   width: 24px;
   padding: 8px 8px 8px 8px; 
-  /* font-size: 15px; */
-  /* font-weight: bold; */
   background-color: #f0f0f0;
   border-radius: 50%;
   color: #94A91B;
+}
+
+.icon-disposition{
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+ .icon-action-style {
+  font-weight: bold;
+  color: #94A91B;
+  cursor: pointer;
+  transition: color 0.3s ease;
 }

@@ -43,7 +43,9 @@ import DetailFormations from './modules/cooperatives/coop/DetailFormation';
 import LoadingScreen from './auth/LoadingScreen';
 
 import Points from './modules/cooperatives/Points';
+import { EnqueteProvider } from './context';
 import ListeEnquetes from './modules/enquete/pages/ListeEnquetes';
+import DetailEnquete from './modules/enquete/pages/DetailEnquete';
 
 // Lazy load uniquement pour Login
 const NewConnexion = lazy(() => import('./auth/NewLogin'));
@@ -51,10 +53,10 @@ const NewConnexion = lazy(() => import('./auth/NewLogin'));
 function Main(){
     return (
         <div>
-             <Switch>
-                <Route path="/dashboard/" element={<Home />} />
-                {/* <Route path="/" element={<NewConnexion />} /> */}
-                {/* <Route path="/" element={<Connexion />} /> */}
+                <Switch>
+                    <Route path="/dashboard/" element={<Home />} />
+                    {/* <Route path="/" element={<NewConnexion />} /> */}
+                    {/* <Route path="/" element={<Connexion />} /> */}
 
                 {/* Utilisation de Suspense uniquement pour Login */}
                 <Route
@@ -112,9 +114,15 @@ function Main(){
                 <Route path="/points" element={<Points />} />
                 <Route path="/formations/" element={<AllFormations />} />
                 <Route path="/formations/:id" element={<DetailFormations />} />
-                {/*MODULE ENQUETE*/}
-                <Route path="/enquetes/" element={<ListeEnquetes />} />
+                {/* MODULE ENQUETE */}
+               
             </Switch>
+            <EnqueteProvider>
+                <Switch>
+                    <Route path="/enquetes/" element={<ListeEnquetes />} />
+                    <Route path="/enquetes/:id" element={<DetailEnquete />} />
+                </Switch>
+            </EnqueteProvider>
         </div>
     )
 }
