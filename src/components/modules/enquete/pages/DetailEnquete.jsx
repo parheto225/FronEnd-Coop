@@ -37,35 +37,62 @@ function DetailEnquete() {
             <div>
                 <TitrePage title="Détails de l'enquête" />
                 <FormContainer formTitle={"Informations de l'enquête"} buttonTitle="Enregistrer" onSubmit={() => console.log("Enregistrer")}>
-                   <div className="col-3">
+                    <div className="col-12">
+                     <TextField 
+                        label="Intitulé de l'enquête"
+                        desabled={true}
+                        value={formData.libelle}
+                        onChange={handleChange("libelle")}
+                    />
+                   </div>
+                   <div className="col-6">
                     <TextField
                         label="Identifiant"
+                        desabled={true}
                         value={formData.identifiant}
                         onChange={handleChange("identifiant")}
                     />
                    </div>
-                   <div className="col-9">
-                     <TextField
-                        label="Intitulé"
-                        value={formData.libelle}
-                        onChange={handleChange("libelle")}
-                    />
-                   </div>
+                   
                    <div className="col-6">
                     <SelectField
-                        label="Identifiant"
-                        elements={[]}
-                        onChange={handleChange("identifiant")}
+                        label="Campagne"
+                        elements={[enquete?.campagne].filter(Boolean)}
+                        onChange={handleChange("campagne")}
                     />
                    </div>
                    <div className="col-6">
                      <TextField
-                        label="Intitulé"
-                        value={formData.libelle}
+                        label="Type d'enquête"
+                        desabled={true}
+                        value={enquete?.type_enquete?.libelle || ""}
                         onChange={handleChange("libelle")}
                     />
-                   </div>  
-                   
+                   </div>
+                   <div className="col-6">
+                     <TextField
+                        label="Projet"
+                        desabled={true}
+                        value={enquete?.projet?.nomProjet || ""}
+                        onChange={handleChange("libelle")}
+                    />
+                   </div> 
+                    <div className="col-6">
+                     <TextField
+                        label="Statut"
+                        desabled={true}
+                        value={enquete?.est_ouverte ? "Ouverte" : "Fermée"}
+                        onChange={handleChange("libelle")}
+                    />
+                   </div>
+                   <div className="col-6">
+                     <TextField
+                        label="Créée par"
+                        desabled={true}
+                        value={enquete?.created_by?.nom + " "+enquete?.created_by?.prenom}
+                        onChange={handleChange("libelle")}
+                    />
+                   </div> 
                 </FormContainer>
             </div>
         </Content>

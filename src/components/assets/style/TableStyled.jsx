@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 export const TableStyled = styled.table`
+  table-layout: fixed;
   width: 100%;
   border-collapse: collapse;
   font-family: Inter;
@@ -20,6 +21,12 @@ export const TableStyled = styled.table`
   & td {
   padding: 10px;
   text-align: center;
+  vertical-align: middle;
+  width: 250px;
+  }
+
+  & td {
+  decoration: none;
   }
 
   & tbody tr:nth-child(even) {

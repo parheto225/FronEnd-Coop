@@ -31,3 +31,9 @@
     font-size: 20px;
     font-weight: bold;
 }
+
+.position-flex-end {
+    display: flex;
+    justify-content:right;
+    /* gap: 15px; */
+}
