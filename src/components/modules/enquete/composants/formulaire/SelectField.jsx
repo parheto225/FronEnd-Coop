@@ -8,8 +8,8 @@ function SelectField({ elements, label, onChange }) {
     return (
         <div className="mb-3">
             <label className="col-12 form-label">{label}</label>
-            <select className="col-12 select-form select-campagne" onChange={handleChange}>
-                {/* <option selected disabled>{label}</option> */}
+            <select className="col-12 select-form select-campagne"  onChange={handleChange}>
+                <option selected disabled>{label}</option>
                 {elements.map(element => (
                     <option key={element.id} value={element.id}>
                         {element.libelle}

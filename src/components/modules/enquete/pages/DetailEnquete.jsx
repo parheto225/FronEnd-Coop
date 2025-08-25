@@ -36,7 +36,7 @@ function DetailEnquete() {
         <Content>
             <div>
                 <TitrePage title="Détails de l'enquête" />
-                <FormContainer formTitle={"Informations de l'enquête"} buttonTitle="Enregistrer" onSubmit={() => console.log("Enregistrer")}>
+                <FormContainer formTitle={"Informations de l'enquête"}>
                     <div className="col-12">
                      <TextField 
                         label="Intitulé de l'enquête"
