@@ -43,7 +43,7 @@ function Content({children,sideID,parent}){
                             <p className="mb-0 mt-2 mt-sm-0 text-900">AKIDOMPRO
                                 <span className="d-none d-sm-inline-block"></span>
                                 <span className="d-none d-sm-inline-block mx-1">|</span>
-                                <br className="d-sm-none" />2023 &copy;<a className="mx-1" href="https://agro-map.com/">Agromap</a> Tous droits réservés
+                                <br className="d-sm-none" />{new Date().getFullYear()} &copy;<a className="mx-1" href="https://agro-map.com/">Agromap</a> Tous droits réservés
                             </p>
                             </div>
                             <div className="col-12 col-sm-auto text-center">
