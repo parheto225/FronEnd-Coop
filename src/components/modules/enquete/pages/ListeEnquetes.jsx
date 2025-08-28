@@ -7,10 +7,13 @@ import "../../../assets/style/SelectCampagne.css";
 import "../../../assets/style/icon.css";
 import {ButtonAdd, ButtonDownload} from "../../../assets/style/Buttons";
 import { TableStyled } from "../../../assets/style/TableStyled";
+import {IconAction} from "../../../assets/style/Icon";
 
 import SelectCampagne from "../composants/SelectCampagne";
 import TitrePage from "../composants/TitrePage";
 import { Loader } from "../../../assets/style/Loader";
+import ModalDetail from "../composants/ModalDetail";
+import DetailEnquete from "./DetailEnquete";
 
 function ListeEnquetes() {
       const {enquetes, setEnquetes} = useContext(EnqueteContext);
@@ -75,10 +78,13 @@ function ListeEnquetes() {
                   <td>{enquete.libelle}</td>
                   <td>{enquete.campagne.libelle}</td>
                   <td>{enquete.est_ouverte ? "Ouverte" : "Fermée"}</td>
-                  <td className="icon-disposition">
-                    <Link to={`/enquetes/${enquete.id}`}><i className="fa fa-eye icon-action-style"></i></Link>
-                    <Link to={`/enquetes/${enquete.identifiant}/questions`}><i className="fa-solid fa-question icon-action-style"></i></Link>
-                    <Link to={`/enquetes/${enquete.identifiant}/reponses`}><i className="fa-solid fa-comment icon-action-style"></i></Link>
+                  <td >
+                    <ModalDetail title={enquete.libelle}>
+                      <DetailEnquete index={idx} enquete={enquete}/>
+                    </ModalDetail>
+                    {/* <Link to={`/enquetes/${enquete.id}`}><IconAction className="fa fa-eye icon-action-style"></IconAction></Link> */}
+                    <Link to={`/enquetes/${enquete.identifiant}/questions`}><IconAction className="fa-solid fa-question"></IconAction></Link>
+                    <Link to={`/enquetes/${enquete.identifiant}/reponses`}><IconAction className="fa-solid fa-comment"></IconAction></Link>
                   </td>
                 </tr>
               ))}

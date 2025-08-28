@@ -10,10 +10,10 @@ import "../../../assets/style/SelectCampagne.css";
 import "../../../assets/style/icon.css";
 import {ButtonAdd, ButtonDownload} from "../../../assets/style/Buttons";
 import { TableStyled } from "../../../assets/style/TableStyled";
-
-import SelectCampagne from "../composants/SelectCampagne";
+import {IconAction} from "../../../assets/style/Icon";
 import TitrePage from "../composants/TitrePage";
 import { Loader } from "../../../assets/style/Loader";
+import Colors from "../../../../utils/colors";
 
 function ListeQuestionEnquete() {
     const { identifiant } = useParams();
@@ -81,9 +81,9 @@ async  function fetchQuestions() {
                   <td>{question.type_question.libelle}</td>
                   <td>{enquete.est_obligatoire ? "Obligatoire" : "Facultatif"}</td>
                   <td>
-                    <Link to={`#`}><i className="fa fa-eye icon-action-style"></i></Link>
-                    <Link to={`#`}><i className="fa-solid fa-question icon-action-style"></i></Link>
-                    <Link to={`#`}><i className="fa-solid fa-comment icon-action-style"></i></Link>
+                    <Link to={`#`}><IconAction className="fa fa-pencil"></IconAction></Link>
+                    <Link to={`#`}><IconAction className="fa-solid fa-trash"  color={Colors.red}></IconAction></Link>
+                    {/* <Link to={`#`}><IconAction className="fa-solid fa-comment"></IconAction></Link> */}
                   </td>
                 </tr>
               ))}

@@ -73,3 +73,12 @@ export const ButtonSubmit = styled.button`
   }
 
 `;
+
+export const ButtonSimple = styled.button`
+  text-decoration: none;
+  border: none;
+  background: none;
+  padding: 0;
+  // display: flex;
+  // align-items: center;
+`;

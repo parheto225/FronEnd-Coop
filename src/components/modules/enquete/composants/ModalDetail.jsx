@@ -1,35 +1,39 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import {IconAction} from "../../../assets/style/Icon";
+import { ButtonSimple } from '../../../assets/style/Buttons';
+import Colors from '../../../../utils/colors';
 
-const ModalDetailEnquete = ({index, enquete}) => {
+const ModalDetail = ({title, children}) => {
   const [showModal, setShowModal] = useState(false);
 
   const ouvrirModal = () => setShowModal(true);
   const fermerModal = () => setShowModal(false);
 
   return (
-    <div>
+    <>
+    
       
-      <button className="btn btn-sm" onClick={ouvrirModal}>
-        <i className="fa fa-eye"></i>
-      </button>
+      <ButtonSimple onClick={ouvrirModal}>
+        <IconAction className="fa fa-eye "/>
+      </ButtonSimple>
 
       {showModal && (
         <div className="modal show d-block" tabIndex="-1" role="dialog">
           <div className="modal-dialog modal-lg" role="document">
             <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">{enquete.libelle}</h5>
+              <div className="modal-header" style={{ backgroundColor:Colors.secondary }}>
+                <h5 className="modal-title">{title}</h5>
                 <button type="button" className="btn-close" onClick={fermerModal}></button>
               </div>
               <div className="modal-body">
-                <p>Voici le contenu du modal Bootstrap dans React.</p>
+                { children}
               </div>
-              <div className="modal-footer">
+              {/* <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={fermerModal}>
                   Fermer
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -37,12 +41,12 @@ const ModalDetailEnquete = ({index, enquete}) => {
 
       {/* Optionnel : fond sombre */}
       {/* {showModal && <div className="modal-backdrop show"></div>} */}
-    </div>
+    </>
   );
 };
-export default ModalDetailEnquete;
+export default ModalDetail;
 
-ModalDetailEnquete.propTypes = {
+ModalDetail.propTypes = {
   index: PropTypes.number.isRequired,
   enquete: PropTypes.object.isRequired,
 };
