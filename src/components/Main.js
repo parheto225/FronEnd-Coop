@@ -1,6 +1,5 @@
 import {Routes as Switch, Route} from 'react-router-dom';
-import { useEffect, useState, Suspense, lazy } from 'react';
-import Connexion from './auth/Connexion';
+import { Suspense, lazy } from 'react';
 import Login from './auth/Login';
 import Home from './modules/Home';
 import SimulationCarbon from './modules/carbone/Simulation';
@@ -17,7 +16,6 @@ import RecolteProdList from './modules/cooperatives/producteur/RecolteList';
 import HistoriqueCoopList from './modules/cooperatives/coop/HistoriqueCoopList';
 import ProdCoopList from './modules/cooperatives/coop/ProdList';
 import ParcList from './modules/cooperatives/coop/ParcList';
-import CarteProjet from './modules/cooperatives/Carte';
 import CarteCoop from './modules/cooperatives/CarteCoop';
 import CarteCoopGpt from './modules/cooperatives/CarteCoopGpt'
 import CarteProducteur from './modules/cooperatives/producteur/CarteProd';
@@ -43,7 +41,7 @@ import DetailFormations from './modules/cooperatives/coop/DetailFormation';
 import LoadingScreen from './auth/LoadingScreen';
 
 import Points from './modules/cooperatives/Points';
-import { EnqueteProvider } from './context';
+import { EnqueteProvider, CampagneProvider, UtilisateurProvider } from './context';
 import ListeEnquetes from './modules/enquete/pages/ListeEnquetes';
 import DetailEnquete from './modules/enquete/pages/DetailEnquete';
 import ListeQuestionEnquete from './modules/enquete/pages/ListeQuestionEnquete';
@@ -120,15 +118,21 @@ function Main(){
                 {/* MODULE ENQUETE */}
                
             </Switch>
-            <EnqueteProvider>
-                <Switch>
-                    <Route path="/enquetes/" element={<ListeEnquetes />} />
-                    <Route path="/enquetes/new" element={<EnregistrerEnquete />} />
-                    <Route path="/enquetes/:id" element={<DetailEnquete />} />
-                    <Route path="/enquetes/:identifiant/questions" element={<ListeQuestionEnquete />} />
-                    <Route path="/enquetes/:identifiant/reponses" element={<ListeReponseEnquete />} />
-                </Switch>
-            </EnqueteProvider>
+            <UtilisateurProvider>
+                <CampagneProvider>
+                <EnqueteProvider>
+                    <Switch>
+                        <Route path="/enquetes/" element={<ListeEnquetes />} />
+                        <Route path="/enquetes/new" element={<EnregistrerEnquete />} />
+                        <Route path="/enquetes/:id" element={<DetailEnquete />} />
+                        <Route path="/enquetes/:identifiant/questions" element={<ListeQuestionEnquete />} />
+                        <Route path="/enquetes/:identifiant/reponses" element={<ListeReponseEnquete />} />
+                    </Switch>
+                </EnqueteProvider>
+            </CampagneProvider>
+            </UtilisateurProvider>
+            
+            
         </div>
     )
 }

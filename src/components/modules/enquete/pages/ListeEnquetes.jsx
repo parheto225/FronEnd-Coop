@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
-import { useContext } from "react";
 import { EnqueteContext } from "../../../context";
 import Content from "../../../Content";
 import "../../../assets/style/SelectCampagne.css";
@@ -46,7 +45,9 @@ function ListeEnquetes() {
                   }, [])} onChange={handleSelectChange} />
               </div>
               <div className="col-4">
-                  <ButtonAdd > <i className="fas fa-plus icon-style"></i> <span>Ajouter une enquête</span></ButtonAdd>
+                <Link className="nav-link" to="/enquetes/new" data-bs-toggle="" aria-expanded="false">
+                     <ButtonAdd > <i className="fas fa-plus icon-style"></i> <span>Ajouter une enquête</span></ButtonAdd>           
+                </Link> 
               </div>
               <div className="col-3">
                   <ButtonDownload > <i className="fas fa-download icon-style2"></i><span> Exporter la liste</span></ButtonDownload>
@@ -65,7 +66,8 @@ function ListeEnquetes() {
                 <th>Actions</th>
               </tr>
             </thead>
-            {isDataLoading ? (<Loader/>  ) : (
+            {isDataLoading ? (<Loader/>  ) : filteredEnquetes.length === 0 ? (
+              <tbody><tr><td colSpan="5">Aucune enquête trouvée</td></tr></tbody>) : (
               <tbody>
               {filteredEnquetes && filteredEnquetes.map((enquete, idx) => (
                 <tr key={enquete.id}>
