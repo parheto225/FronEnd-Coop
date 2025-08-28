@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import TextField from "../composants/formulaire/TextField";
+import TextField from "./formulaire/TextField";
 import "../../../assets/style/common.css";
 
 function DetailEnquete({enquete}) {

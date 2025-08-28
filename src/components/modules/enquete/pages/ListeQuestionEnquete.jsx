@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import { secondBaseUrl } from "../../../config/baseUrl";
 import PropTypes from "prop-types";
@@ -10,10 +10,13 @@ import "../../../assets/style/SelectCampagne.css";
 import "../../../assets/style/icon.css";
 import {ButtonAdd, ButtonDownload} from "../../../assets/style/Buttons";
 import { TableStyled } from "../../../assets/style/TableStyled";
-import {IconAction} from "../../../assets/style/Icon";
 import TitrePage from "../composants/TitrePage";
 import { Loader } from "../../../assets/style/Loader";
-import Colors from "../../../../utils/colors";
+import ModalDelete from "../composants/ModalDelete";
+import TextField from "../composants/formulaire/TextField";
+import {IconAction} from "../../../assets/style/Icon";
+import { ButtonSimple } from '../../../assets/style/Buttons';
+import Colors from '../../../../utils/colors';
 
 function ListeQuestionEnquete() {
     const { identifiant } = useParams();
@@ -21,12 +24,16 @@ function ListeQuestionEnquete() {
       const enquete = enquetes?.find((e) => String(e.identifiant) === identifiant);
       const [questions, setQuestions] = useState([]);
       const [isDataLoading, setDataLoading] = useState(false);
+      const [formQuestion, setFormQuestion] = useState({});
+      const [questionToEdit, setQuestionToEdit] = useState(null);
+      const [isEditModalOpen, setEditModalOpen] = useState(false);
+      const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     setDataLoading(true);
     fetchQuestions();
     setDataLoading(false);
-  }, [questions]
+  }, []
 );
 
 async  function fetchQuestions() {
@@ -39,7 +46,62 @@ async  function fetchQuestions() {
     }
   }
 
+  async function handleDeleteQuestion(questionId) {
+    try {
+         const resultat  = await axios.delete(`${secondBaseUrl}/question/delete/?id_question=${questionId}`);
+        if(resultat.data.result){
+           setQuestions(questions.filter((q) => q.id !== questionId));
+        }
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+    }
+   
+  }
+
+  function openEditModal(question) {
+   setFormQuestion(question);
+   setQuestionToEdit(question);
+   setEditModalOpen(true);
+}
+
+function closeEditModal() {
+  setEditModalOpen(false);
+  setQuestionToEdit(null);
+  setFormQuestion({});
+}
+
+  function openDeleteModal(question) {
+   setQuestionToEdit(question);
+   setDeleteModalOpen(true);
+   setFormQuestion({});
+}
+
+function closeDeleteModal() {
+  setDeleteModalOpen(false);
+  setQuestionToEdit(null);
+  setFormQuestion({});
+}
+
+  async function handleUpdateQuestion(questionId) {
+     setQuestions(questions.map((q) => (q.id === questionId ? { ...q, ...formQuestion } : q)));
+    // try {
+    //      const resultat  = await axios.put(`${secondBaseUrl}/question/update/?id_question=${questionId}`);
+    //     if(resultat.data.result){
+    //        setQuestions(questions.map((q) => (q.id === questionId ? { ...q, ...resultat.data.question } : q)));
+    //     }
+    // } catch (error) {
+    //     console.error('There was a problem with the fetch operation:', error);
+    // }
+
+  }
+
+  function handleFormChange(event) {
+    const { name, value } = event.target;
+    setFormQuestion((prev) => ({ ...prev, [name]: value }));
+  }
+
   return (
+    
     <Content>
         <div className="row col-12">
             <TitrePage title="Liste des questions" />
@@ -79,11 +141,15 @@ async  function fetchQuestions() {
                   <td>{idx+1}</td>
                   <td>{question.libelle}</td>
                   <td>{question.type_question.libelle}</td>
-                  <td>{enquete.est_obligatoire ? "Obligatoire" : "Facultatif"}</td>
+                  <td>{question.est_obligatoire ? "Obligatoire" : "Facultatif"}</td>
                   <td>
-                    <Link to={`#`}><IconAction className="fa fa-pencil"></IconAction></Link>
-                    <Link to={`#`}><IconAction className="fa-solid fa-trash"  color={Colors.red}></IconAction></Link>
-                    {/* <Link to={`#`}><IconAction className="fa-solid fa-comment"></IconAction></Link> */}
+                     <ButtonSimple onClick={() => openEditModal(question)}>
+                       <IconAction className="fa-solid fa-pencil" color={Colors.primary} />
+                     </ButtonSimple>
+                      <ButtonSimple onClick={() =>openDeleteModal(question)}>
+                        <IconAction className="fa-solid fa-trash" color={Colors.red} />
+                      </ButtonSimple>
+                    
                   </td>
                 </tr>
               ))}
@@ -95,6 +161,49 @@ async  function fetchQuestions() {
         
         
       </div>
+      {isEditModalOpen && questionToEdit && (
+        <ModalDelete
+          title="Modifier la question"
+          show={isEditModalOpen}
+          onConfirm={() => { handleUpdateQuestion(questionToEdit.id);}}
+          onClose={closeEditModal}
+        >
+          <div className="row col-12">
+            <div className="col-12">
+              <TextField
+                label="Intitulé de la question"
+                value={formQuestion.libelle}
+                onChange={handleFormChange}
+                name="libelle"
+              />
+            </div>
+            <div className="col-6">
+              <TextField
+                label="Type"
+                value={formQuestion.type_question?.libelle || ""}
+                onChange={handleFormChange}
+                name="type"
+              />
+            </div>
+            <div className="col-6">
+              <TextField
+                label="Statut"
+                value={formQuestion.est_obligatoire ? "Obligatoire" : "Facultatif"}
+                onChange={handleFormChange}
+                name="est_obligatoire"
+              />
+            </div>
+          </div>
+        </ModalDelete>
+      )}
+                  {isDeleteModalOpen && questionToEdit && (
+                    <ModalDelete title="Supprimer la question" show={isDeleteModalOpen} onConfirm={() => handleDeleteQuestion(questionToEdit.id)} onClose={closeDeleteModal}>
+                      <div>
+                        <p>Êtes-vous sûr de vouloir supprimer cette question ?</p>
+                      <q style={{ fontSize: '1.2em', fontWeight: 'bold' }}>{questionToEdit.libelle}</q>
+                      </div>
+                    </ModalDelete>
+                  )}
     </Content>
   );
 }

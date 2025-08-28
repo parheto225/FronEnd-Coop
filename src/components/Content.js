@@ -27,8 +27,6 @@ function Content({children,sideID,parent}){
         }
     },[user]);
 
-    
-
     return (
        
             <main className="main" id="top">

@@ -13,7 +13,7 @@ import SelectCampagne from "../composants/SelectCampagne";
 import TitrePage from "../composants/TitrePage";
 import { Loader } from "../../../assets/style/Loader";
 import ModalDetail from "../composants/ModalDetail";
-import DetailEnquete from "./DetailEnquete";
+import DetailEnquete from "../composants/DetailEnquete";
 
 function ListeEnquetes() {
       const {enquetes, setEnquetes} = useContext(EnqueteContext);

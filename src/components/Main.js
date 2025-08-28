@@ -43,7 +43,6 @@ import LoadingScreen from './auth/LoadingScreen';
 import Points from './modules/cooperatives/Points';
 import { EnqueteProvider, CampagneProvider, UtilisateurProvider } from './context';
 import ListeEnquetes from './modules/enquete/pages/ListeEnquetes';
-import DetailEnquete from './modules/enquete/pages/DetailEnquete';
 import ListeQuestionEnquete from './modules/enquete/pages/ListeQuestionEnquete';
 import ListeReponseEnquete from './modules/enquete/pages/ListeReponseEnquete';
 import EnregistrerEnquete from './modules/enquete/pages/EnregisterEnquete';
@@ -124,7 +123,6 @@ function Main(){
                     <Switch>
                         <Route path="/enquetes/" element={<ListeEnquetes />} />
                         <Route path="/enquetes/new" element={<EnregistrerEnquete />} />
-                        <Route path="/enquetes/:id" element={<DetailEnquete />} />
                         <Route path="/enquetes/:identifiant/questions" element={<ListeQuestionEnquete />} />
                         <Route path="/enquetes/:identifiant/reponses" element={<ListeReponseEnquete />} />
                     </Switch>
