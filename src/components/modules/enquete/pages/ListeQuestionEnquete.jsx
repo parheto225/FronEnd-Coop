@@ -83,15 +83,17 @@ function closeDeleteModal() {
 }
 
   async function handleUpdateQuestion(questionId) {
-     setQuestions(questions.map((q) => (q.id === questionId ? { ...q, ...formQuestion } : q)));
-    // try {
-    //      const resultat  = await axios.put(`${secondBaseUrl}/question/update/?id_question=${questionId}`);
-    //     if(resultat.data.result){
-    //        setQuestions(questions.map((q) => (q.id === questionId ? { ...q, ...resultat.data.question } : q)));
-    //     }
-    // } catch (error) {
-    //     console.error('There was a problem with the fetch operation:', error);
-    // }
+    //  setQuestions(questions.map((q) => (q.id === questionId ? { ...q, ...formQuestion } : q)));
+    try {
+         const resultat  = await axios.put(`${secondBaseUrl}/question/update/?id_question=${questionId}`, formQuestion);
+        if(resultat.data.result){
+           setQuestions(questions.map((q) => (q.id === questionId ? { ...q, ...formQuestion } : q)));
+        }else{
+          console.error('Update failed:', resultat.data.message);
+        }
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+    }
 
   }
 
