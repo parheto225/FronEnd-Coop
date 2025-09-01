@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import { secondBaseUrl } from "../../../config/baseUrl";
 import PropTypes from "prop-types";
@@ -8,12 +8,12 @@ import { EnqueteContext } from "../../../context";
 import Content from "../../../Content";
 import "../../../assets/style/SelectCampagne.css";
 import "../../../assets/style/icon.css";
-import {ButtonAdd, ButtonDownload} from "../../../assets/style/Buttons";
+import { ButtonDownload} from "../../../assets/style/Buttons";
 import { TableStyled } from "../../../assets/style/TableStyled";
 
-import SelectCampagne from "../composants/SelectCampagne";
 import TitrePage from "../composants/TitrePage";
 import { Loader } from "../../../assets/style/Loader";
+import Colors from '../../../../utils/colors';
 
 function ListeReponseEnquete() {
     const { identifiant } = useParams();
@@ -60,14 +60,15 @@ async  function fetchQuestions() {
         <div className="row col-12">
             <TitrePage title="Liste des reponses" />
             <div className="position-flex-end">
-                {/* <div className="col-5">
-                    <SelectCampagne campagnes={enquetes.reduce((acc, curr) => {
+                <div className="col-5">
+                    <h4 style={{ color: Colors.primary }}>{enquete.libelle}</h4>
+                    {/* <SelectCampagne campagnes={enquetes.reduce((acc, curr) => {
                         if (curr.campagne && !acc.find(item => item.id === curr.campagne.id)) {
                             acc.push(curr.campagne);
                         }
                         return acc;
-                    }, [])} onChange={handleSelectChange} />
-                </div> */}
+                    }, [])} onChange={handleSelectChange} /> */}
+                </div>
                 {/* <div className="col-4">
                     <ButtonAdd > <i className="fas fa-plus icon-style"></i> <span>Ajouter une enquête</span></ButtonAdd>
                 </div> */}

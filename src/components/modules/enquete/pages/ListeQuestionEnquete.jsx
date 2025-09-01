@@ -115,14 +115,16 @@ function closeDeleteModal() {
         <div className="row col-12">
             <TitrePage title="Liste des questions" />
             <div className="position-flex-end">
-                {/* <div className="col-5">
-                <SelectCampagne campagnes={enquetes.reduce((acc, curr) => {
+                <div className="col-5">
+                  <h4 style={{ color: Colors.primary }}>{enquete.libelle}</h4>
+                {/* <SelectCampagne campagnes={enquetes.reduce((acc, curr) => {
                     if (curr.campagne && !acc.find(item => item.id === curr.campagne.id)) {
                         acc.push(curr.campagne);
                     }
                     return acc;
-                }, [])} onChange={handleSelectChange} />
-                </div> */}
+                }, [])} onChange={handleSelectChange} /> */}
+                </div>
+
                 <div className="col-4">
                     <ButtonAdd > <i className="fas fa-plus icon-style"></i> <span>Ajouter une question</span></ButtonAdd>
                 </div>
