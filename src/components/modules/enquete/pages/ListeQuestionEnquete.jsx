@@ -17,7 +17,7 @@ import TextField from "../composants/formulaire/TextField";
 import {IconAction} from "../../../assets/style/Icon";
 import { ButtonSimple } from '../../../assets/style/Buttons';
 import Colors from '../../../../utils/colors';
-
+import {listToString, stringToList} from "../../../../utils/stringHandling.jsx";
 function ListeQuestionEnquete() {
     const { identifiant } = useParams();
       const {enquetes, setEnquetes} = useContext(EnqueteContext);
@@ -83,6 +83,7 @@ function closeDeleteModal() {
 }
 
   async function handleUpdateQuestion(questionId) {
+    // console.log('Updated question data:', formQuestion);
     //  setQuestions(questions.map((q) => (q.id === questionId ? { ...q, ...formQuestion } : q)));
     try {
          const resultat  = await axios.put(`${secondBaseUrl}/question/update/?id_question=${questionId}`, formQuestion);
@@ -99,7 +100,13 @@ function closeDeleteModal() {
 
   function handleFormChange(event) {
     const { name, value } = event.target;
-    setFormQuestion((prev) => ({ ...prev, [name]: value }));
+    if(name === "est_obligatoire") {
+      setFormQuestion((prev) => ({ ...prev, [name]: event.target.checked }));
+    } else if(name === "choix") {
+      setFormQuestion((prev) => ({ ...prev, [name]: stringToList(value) }));
+    } else {
+      setFormQuestion((prev) => ({ ...prev, [name]: value }));
+    }
   }
 
   return (
@@ -132,18 +139,26 @@ function closeDeleteModal() {
                 <th>N</th>
                 <th>Libellé</th>
                 <th>Type</th>
-                <th>Statut</th>
+                <th>Obligatoire</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            {isDataLoading ? (<Loader/>  ) : (
+            {isDataLoading ? (<Loader/>  ) : questions.length === 0 ? (
+              <tbody><tr><td colSpan="5">Aucune question trouvée</td></tr></tbody>) : (
             <tbody>
               {questions && questions.map((question, idx) => (
                 <tr key={question.id}>
                   <td>{idx+1}</td>
                   <td>{question.libelle}</td>
                   <td>{question.type_question.libelle}</td>
-                  <td>{question.est_obligatoire ? "Obligatoire" : "Facultatif"}</td>
+                  <td>
+                    {/* {question.est_obligatoire ? "Obligatoire" : "Facultatif"} */}
+                    <span className={`badge ${question.est_obligatoire ? "bg-danger" : "bg-success"}`}>
+                      {question.est_obligatoire ? "Oui" : "Non"}
+                    </span>
+                    
+             
+                  </td>
                   <td>
                      <ButtonSimple onClick={() => openEditModal(question)}>
                        <IconAction className="fa-solid fa-pencil" color={Colors.primary} />
@@ -166,41 +181,69 @@ function closeDeleteModal() {
       {isEditModalOpen && questionToEdit && (
         <ModalDelete
           title="Modifier la question"
+          size={`${["CHOIX UNIQUE", "CHOIX MULTIPLE"].includes(formQuestion.type_question.libelle) ? "xl":"lg"}`}
           show={isEditModalOpen}
           onConfirm={() => { handleUpdateQuestion(questionToEdit.id);}}
           onClose={closeEditModal}
         >
           <div className="row col-12">
-            <div className="col-12">
-              <TextField
-                label="Intitulé de la question"
-                value={formQuestion.libelle}
-                onChange={handleFormChange}
-                name="libelle"
-              />
+            <div className={`row ${["CHOIX UNIQUE", "CHOIX MULTIPLE"].includes(formQuestion.type_question.libelle) ? "col-6" : "col-12"}`}>
+               <div className="col-12">
+                <TextField
+                  label="Intitulé de la question"
+                  value={formQuestion.libelle}
+                  onChange={handleFormChange}
+                  name="libelle"
+                />
+               </div>
+              <div className="row col-12">
+                <div className="col-6">
+                  <TextField
+                  label="Type"
+                  value={formQuestion.type_question?.libelle || ""}
+                  onChange={handleFormChange}
+                  name="type"
+                />
+                </div>
+                <div className="col-6">
+                  <div className="col-12">
+                    <div className="mb-3">
+                      <label className="form-label">La question est :</label>
+                      <div className="form-check form-switch">
+                        <input className="form-check-input" type="checkbox" name="est_obligatoire" checked={formQuestion.est_obligatoire} onChange={handleFormChange} id={`flexSwitchCheckChecked-${formQuestion.id}`} />
+                        <label className="form-check-label" htmlFor={`flexSwitchCheckChecked-${formQuestion.id}`}>{formQuestion.est_obligatoire ? "Obligatoire" : "Facultative"}</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="col-6">
-              <TextField
-                label="Type"
-                value={formQuestion.type_question?.libelle || ""}
-                onChange={handleFormChange}
-                name="type"
-              />
+            {
+              formQuestion.type_question && ["CHOIX UNIQUE", "CHOIX MULTIPLE"].includes(formQuestion.type_question.libelle) && (
+                <div className="row col-6">
+              <div className="col-12">
+                <h6>Options de choix</h6>
+                <p>Ajouter des options de choix pour la question</p>
+              </div>
+              <div className="col-12">
+                <textarea name="choix"  onChange={handleFormChange} id="" style={{ width: '100%', height: '100%' }}>
+                  {
+                  listToString(formQuestion.choix)
+                  }
+                </textarea>
+              </div>
+              
             </div>
-            <div className="col-6">
-              <TextField
-                label="Statut"
-                value={formQuestion.est_obligatoire ? "Obligatoire" : "Facultatif"}
-                onChange={handleFormChange}
-                name="est_obligatoire"
-              />
-            </div>
+              )
+            }
+            
+           
           </div>
         </ModalDelete>
       )}
                   {isDeleteModalOpen && questionToEdit && (
                     <ModalDelete title="Supprimer la question" show={isDeleteModalOpen} onConfirm={() => handleDeleteQuestion(questionToEdit.id)} onClose={closeDeleteModal}>
-                      <div>
+                      <div  style={{ textAlign: 'center' }}>
                         <p>Êtes-vous sûr de vouloir supprimer cette question ?</p>
                       <q style={{ fontSize: '1.2em', fontWeight: 'bold' }}>{questionToEdit.libelle}</q>
                       </div>

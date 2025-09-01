@@ -68,22 +68,28 @@ async  function fetchQuestions() {
                         return acc;
                     }, [])} onChange={handleSelectChange} />
                 </div> */}
-                <div className="col-4">
+                {/* <div className="col-4">
                     <ButtonAdd > <i className="fas fa-plus icon-style"></i> <span>Ajouter une enquête</span></ButtonAdd>
-                </div>
-                <div className="col-3">
+                </div> */}
+                {
+                   questions.length > 0 ? (
+                            <div className="col-3">
                     <ButtonDownload > <i className="fas fa-download icon-style2"></i><span> Exporter la liste</span></ButtonDownload>
                 </div>
+                        ) : null
+                    
+                }
+                
             </div>
         </div>
       <div>
         {isDataLoading ? (
-            <Loader/>  ) : (
+            <Loader/>  )  : (
             <div className="table-responsive">
                 <TableStyled className="table">
                     <thead>
                     <tr>
-                        <th>Sujet</th>
+                        <th> {questions.length>0 ? "Sujet" : "Aucune question trouvée"}</th>
                         {questions && questions.map((question)=><th key={question.id}>{question.libelle}</th>)}
                         {/* <th>Actions</th> */}
                     </tr>

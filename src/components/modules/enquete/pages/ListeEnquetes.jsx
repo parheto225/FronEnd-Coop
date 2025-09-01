@@ -1,3 +1,5 @@
+import axios from "axios";
+import { secondBaseUrl } from "../../../config/baseUrl";
 import { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -12,13 +14,18 @@ import {IconAction} from "../../../assets/style/Icon";
 import SelectCampagne from "../composants/SelectCampagne";
 import TitrePage from "../composants/TitrePage";
 import { Loader } from "../../../assets/style/Loader";
-import ModalDetail from "../composants/ModalDetail";
-import DetailEnquete from "../composants/DetailEnquete";
+import ModalDelete from "../composants/ModalDelete";
+import TextField from "../composants/formulaire/TextField";
+import Colors from '../../../../utils/colors';
+import { ButtonSimple } from '../../../assets/style/Buttons';
 
 function ListeEnquetes() {
       const {enquetes, setEnquetes} = useContext(EnqueteContext);
       const [filteredEnquetes, setFilteredEnquetes] = useState([]);
       const [isDataLoading, setDataLoading] = useState(false);
+      const [formEnquete, setFormEnquete] = useState({});
+      const [enqueteToEdit, setEnqueteToEdit] = useState(null);
+      const [isEditModalOpen, setEditModalOpen] = useState(false);
 
   useEffect(() => {
     setDataLoading(true);
@@ -32,6 +39,45 @@ function ListeEnquetes() {
           return enquete.campagne.id === selectedCampagneId;
       });
       setFilteredEnquetes(filtered);
+  }
+
+    function openEditModal(enquete) {
+   setFormEnquete(enquete);
+   setEnqueteToEdit(enquete);
+   setEditModalOpen(true);
+}
+
+function closeEditModal() {
+  setEditModalOpen(false);
+  setEnqueteToEdit(null);
+  setFormEnquete({});
+}
+
+
+  async function handleUpdateEnquete(enqueteId) {
+    // console.log('Updated question data:', formQuestion);
+    //  setEnquetes(enquetes.map((q) => (q.id === enqueteId ? { ...q, ...formEnquete } : q)));
+    try {
+         const resultat  = await axios.patch(`${secondBaseUrl}/enquete/update/?id_enquete=${enqueteId}`, formEnquete);
+        if(resultat.data.result){
+               setEnquetes(enquetes.map((q) => (q.id === enqueteId ? { ...q, ...formEnquete } : q)));
+        }else{
+          console.error('Update failed:', resultat.data.message);
+        }
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+    }
+
+  }
+
+  function handleFormChange(event) {
+    const { name, value } = event.target;
+    if(name === "est_ouverte") {
+      setFormEnquete((prev) => ({ ...prev, [name]: event.target.checked }));
+    } else{
+       setFormEnquete((prev) => ({ ...prev, [name]: value }));
+    }
+   
   }
 
   return (
@@ -77,11 +123,13 @@ function ListeEnquetes() {
                   <td>{enquete.identifiant}</td>
                   <td>{enquete.libelle}</td>
                   <td>{enquete.campagne.libelle}</td>
-                  <td>{enquete.est_ouverte ? "Ouverte" : "Fermée"}</td>
+                  <td> <span className={`badge ${enquete.est_ouverte ? "bg-success" : "bg-danger"}`}>
+                      {enquete.est_ouverte ? "Ouverte" : "Fermée"}
+                    </span></td>
                   <td >
-                    <ModalDetail title={enquete.libelle}>
-                      <DetailEnquete index={idx} enquete={enquete}/>
-                    </ModalDetail>
+                    <ButtonSimple onClick={() => openEditModal(enquete)}>
+                       <IconAction className="fa-solid fa-pencil" color={Colors.primary} />
+                     </ButtonSimple>
                     {/* <Link to={`/enquetes/${enquete.id}`}><IconAction className="fa fa-eye icon-action-style"></IconAction></Link> */}
                     <Link to={`/enquetes/${enquete.identifiant}/questions`}><IconAction className="fa-solid fa-question"></IconAction></Link>
                     <Link to={`/enquetes/${enquete.identifiant}/reponses`}><IconAction className="fa-solid fa-comment"></IconAction></Link>
@@ -94,6 +142,73 @@ function ListeEnquetes() {
           </TableStyled>
         </div>
       </div>
+       {isEditModalOpen && enqueteToEdit && (
+        <ModalDelete
+          title="Modifier l'enquête"
+          show={isEditModalOpen}
+          onConfirm={() => { handleUpdateEnquete(enqueteToEdit.id);}}
+          onClose={closeEditModal}
+        >
+          <div className="row col-12">
+                    <div className="col-12">
+                     <TextField 
+                        label="Intitulé de l'enquête"
+                        name="libelle"
+                        value={formEnquete?.libelle}
+                        onChange={handleFormChange}
+                    />
+                   </div>
+                   <div className="col-6">
+                    <TextField
+                        label="Identifiant"
+                        desabled={true}
+                        value={formEnquete?.identifiant}
+                    />
+                   </div>
+                   
+                   <div className="col-6">
+                    <TextField
+                        label="Campagne"
+                        desabled={true}
+                        value={formEnquete?.campagne.libelle}
+                    />
+                   </div>
+                   <div className="col-6">
+                     <TextField
+                        label="Type d'enquête"
+                        desabled={true}
+                        value={formEnquete?.type_enquete?.libelle || ""}
+                       
+                    />
+                   </div>
+                   <div className="col-6">
+                     <TextField
+                        label="Projet"
+                        desabled={true}
+                        value={formEnquete?.projet?.nomProjet || ""}
+                       
+                    />
+                   </div> 
+                    <div className="col-6">
+                     <div className="mb-3">
+                      <label className="form-label">Cette enquête est :</label>
+                      <div className="form-check form-switch">
+                        <input className="form-check-input" type="checkbox" name="est_ouverte" checked={formEnquete.est_ouverte} onChange={handleFormChange} id={`flexSwitchCheckChecked-${formEnquete.id}`} />
+                        <label className="form-check-label" htmlFor={`flexSwitchCheckChecked-${formEnquete.id}`}>{formEnquete.est_ouverte ? "Ouverte" : "Fermée"}</label>
+                      </div>
+                    </div>
+                   </div>
+                   <div className="col-6">
+                     <TextField
+                        label="Créée par"
+                        desabled={true}
+                        value={formEnquete?.created_by?.nom + " "+formEnquete?.created_by?.prenom}
+                       
+                    />
+                   </div> 
+            </div>
+        </ModalDelete>
+      )}
     </Content>
   );
 }
