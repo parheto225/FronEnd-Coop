@@ -84,8 +84,8 @@ function closeEditModal() {
     <Content>
         <div className="row col-12">
             <TitrePage title="Liste des Enquêtes" />
-            <div className="position-flex-end">
-              <div className="col-5">
+            <div className="row">
+              <div className="col-5 centered">
                   <SelectCampagne campagnes={enquetes.reduce((acc, curr) => {
                       if (curr.campagne && !acc.find(item => item.id === curr.campagne.id)) {
                           acc.push(curr.campagne);
@@ -93,12 +93,12 @@ function closeEditModal() {
                       return acc;
                   }, [])} onChange={handleSelectChange} />
               </div>
-              <div className="col-4">
+              <div className="col-4 centered">
                 <Link className="nav-link" to="/enquetes/new" data-bs-toggle="" aria-expanded="false">
                      <ButtonAdd > <i className="fas fa-plus icon-style"></i> <span>Ajouter une enquête</span></ButtonAdd>           
                 </Link> 
               </div>
-              <div className="col-3">
+              <div className="col-3 centered">
                   <ButtonDownload > <i className="fas fa-download icon-style2"></i><span> Exporter la liste</span></ButtonDownload>
               </div>
             </div>
@@ -115,7 +115,7 @@ function closeEditModal() {
                 <th>Actions</th>
               </tr>
             </thead>
-            {isDataLoading ? (<Loader/>  ) : filteredEnquetes.length === 0 ? (
+            {isDataLoading ? (<tbody><tr><td colSpan="5"><div className="centered"><Loader/></div></td></tr></tbody>) : filteredEnquetes.length === 0 ? (
               <tbody><tr><td colSpan="5">Aucune enquête trouvée</td></tr></tbody>) : (
               <tbody>
               {filteredEnquetes && filteredEnquetes.map((enquete, idx) => (

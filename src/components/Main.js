@@ -46,6 +46,7 @@ import ListeEnquetes from './modules/enquete/pages/ListeEnquetes';
 import ListeQuestionEnquete from './modules/enquete/pages/ListeQuestionEnquete';
 import ListeReponseEnquete from './modules/enquete/pages/ListeReponseEnquete';
 import EnregistrerEnquete from './modules/enquete/pages/EnregisterEnquete';
+import ChargerQuestion from './modules/enquete/pages/ChargerQuestions';
 
 // Lazy load uniquement pour Login
 const NewConnexion = lazy(() => import('./auth/NewLogin'));
@@ -124,6 +125,7 @@ function Main(){
                         <Route path="/enquetes/" element={<ListeEnquetes />} />
                         <Route path="/enquetes/new" element={<EnregistrerEnquete />} />
                         <Route path="/enquetes/:identifiant/questions" element={<ListeQuestionEnquete />} />
+                        <Route path="/enquetes/:identifiant/questions/upload" element={<ChargerQuestion />} />
                         <Route path="/enquetes/:identifiant/reponses" element={<ListeReponseEnquete />} />
                     </Switch>
                 </EnqueteProvider>

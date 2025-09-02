@@ -4,5 +4,5 @@ export function listToString(list) {
 }
 
 export function stringToList(str) {
-  return str.split(";").map(item => item.trim());
+  return String(str).split(";").map(item => item.trim());
 }

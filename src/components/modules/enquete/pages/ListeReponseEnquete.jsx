@@ -13,7 +13,7 @@ import { TableStyled } from "../../../assets/style/TableStyled";
 
 import TitrePage from "../composants/TitrePage";
 import { Loader } from "../../../assets/style/Loader";
-import Colors from '../../../../utils/colors';
+import TitreEnquete from "../composants/TitreEnquete.jsx";
 
 function ListeReponseEnquete() {
     const { identifiant } = useParams();
@@ -55,26 +55,29 @@ async  function fetchQuestions() {
     return [null, undefined, "null"].includes(value) ? "-" : value;
   }
 
+  function getReponseMap(details) {
+  // details = [{question: id, valeur: ...}, ...]
+  const map = {};
+  details.forEach(detail => {
+    map[detail.question] = detail.valeur;
+  });
+  return map;
+}
+
   return (
     <Content>
         <div className="row col-12">
             <TitrePage title="Liste des reponses" />
-            <div className="position-flex-end">
-                <div className="col-5">
-                    <h4 style={{ color: Colors.primary }}>{enquete.libelle}</h4>
-                    {/* <SelectCampagne campagnes={enquetes.reduce((acc, curr) => {
-                        if (curr.campagne && !acc.find(item => item.id === curr.campagne.id)) {
-                            acc.push(curr.campagne);
-                        }
-                        return acc;
-                    }, [])} onChange={handleSelectChange} /> */}
+            <div className="row">
+                <div className="col-9 centered">
+                    <TitreEnquete title={enquete.libelle} />
                 </div>
                 {/* <div className="col-4">
                     <ButtonAdd > <i className="fas fa-plus icon-style"></i> <span>Ajouter une enquête</span></ButtonAdd>
                 </div> */}
                 {
                    questions.length > 0 ? (
-                            <div className="col-3">
+                            <div className="col-3 centered">
                     <ButtonDownload > <i className="fas fa-download icon-style2"></i><span> Exporter la liste</span></ButtonDownload>
                 </div>
                         ) : null
@@ -85,7 +88,7 @@ async  function fetchQuestions() {
         </div>
       <div>
         {isDataLoading ? (
-            <Loader/>  )  : (
+            <tbody><tr><td colSpan="5"><div className="centered"><Loader/></div></td></tr></tbody>  )  : (
             <div className="table-responsive">
                 <TableStyled className="table">
                     <thead>
@@ -96,16 +99,19 @@ async  function fetchQuestions() {
                     </tr>
                     </thead>
                     <tbody>
-                    {reponses && reponses.map((reponse, idx) => (
-                        <tr key={reponse.id}>
-                        <td>{reponse.reponses.sujet}</td>
-                        {reponse.reponses.details.map((detail)=>
-                        <td key={detail.question}>
-                            {setValue(detail.valeur)}
-                        </td>)}
-                        
-                        </tr>
-                    ))}
+                        {reponses && reponses.map((reponse) => {
+                            const reponseMap = getReponseMap(reponse.reponses.details);
+                            return (
+                            <tr key={reponse.id}>
+                                <td>{reponse.reponses.sujet}</td>
+                                {questions.map((question) => (
+                                <td key={question.id}>
+                                    {setValue(reponseMap[question.id])}
+                                </td>
+                                ))}
+                            </tr>
+                            );
+                        })}
                     </tbody>
                 </TableStyled>
             </div>

@@ -16,7 +16,7 @@ if (!show) return null;
   return (
     <>
         <div className="modal show d-block" tabIndex="-1" role="dialog">
-          <div className={`modal-dialog modal-${size}`} role="document">
+          <div className={`modal-dialog modal-dialog-scrollable modal-${size}`} role="document">
             <div className="modal-content">
               <div className="modal-header" style={{ backgroundColor:Colors.secondary }}>
                 <h5 className="modal-title">{title}</h5>

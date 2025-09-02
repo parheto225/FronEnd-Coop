@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import { secondBaseUrl } from "../../../config/baseUrl";
 import PropTypes from "prop-types";
@@ -19,10 +19,9 @@ import { ButtonSimple } from '../../../assets/style/Buttons';
 import Colors from '../../../../utils/colors';
 import {listToString, stringToList} from "../../../../utils/stringHandling.jsx";
 import TitreEnquete from "../composants/TitreEnquete.jsx";
+import "../../../assets/style/common.css";
 
-import * as XLSX from "xlsx";
-
-function ListeQuestionEnquete() {
+function ChargerQuestion() {
     const { identifiant } = useParams();
       const {enquetes, setEnquetes} = useContext(EnqueteContext);
       const enquete = enquetes?.find((e) => String(e.identifiant) === identifiant);
@@ -32,18 +31,15 @@ function ListeQuestionEnquete() {
       const [questionToEdit, setQuestionToEdit] = useState(null);
       const [isEditModalOpen, setEditModalOpen] = useState(false);
       const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-      const [isPreviewModalOpen, setPreviewModalOpen] = useState(false);
-      const [previewQuestions, setPreviewQuestions] = useState([]);
 
   useEffect(() => {
-    
+    setDataLoading(true);
     fetchQuestions();
-   
+    setDataLoading(false);
   }, []
 );
 
 async  function fetchQuestions() {
-  setDataLoading(true);
     try {
          const resp  = await axios.get(`${secondBaseUrl}/question/questions/?enquete_identifiant=${enquete.identifiant}`);
         const  listeEnq  = resp.data;
@@ -51,7 +47,6 @@ async  function fetchQuestions() {
     } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
     }
-     setDataLoading(false);
   }
 
   async function handleDeleteQuestion(questionId) {
@@ -65,27 +60,6 @@ async  function fetchQuestions() {
     }
    
   }
-
-    async function handlePreviewQuestions() {
-    // setQuestions([...questions, ...previewQuestions]);
-    try {
-         const resultat  = await axios.post(`${secondBaseUrl}/question/multiple-insert-web/`, {identifiant_enquete: enquete.identifiant, questions: previewQuestions});
-        if(resultat.data.result){
-           fetchQuestions();
-        }else{
-          console.error('Update failed:', resultat.data.message);
-        }
-    } catch (error) {
-        console.error('There was a problem with the fetch operation:', error);
-    }
-
-  }
-
-function closePreviewModal() {
-  setPreviewModalOpen(false);
-  setQuestionToEdit(null);
-  setFormQuestion({});
-}
 
   function openEditModal(question) {
    setFormQuestion(question);
@@ -112,6 +86,8 @@ function closeDeleteModal() {
 }
 
   async function handleUpdateQuestion(questionId) {
+    // console.log('Updated question data:', formQuestion);
+    //  setQuestions(questions.map((q) => (q.id === questionId ? { ...q, ...formQuestion } : q)));
     try {
          const resultat  = await axios.put(`${secondBaseUrl}/question/update/?id_question=${questionId}`, formQuestion);
         if(resultat.data.result){
@@ -136,99 +112,30 @@ function closeDeleteModal() {
     }
   }
 
-function handleFileUpload(event) {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: "array" });
-      const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-      const questionsToPreview = jsonData.map((row) => ({
-        libelle: row["LIBELLE"],
-        type_question: { libelle: row["TYPE"] },
-        est_obligatoire: row["EST_OBLIGATOIRE"] === "OUI" ? true : false,
-        choix: stringToList(row["CHOIX"])
-      }));
-      setPreviewQuestions(questionsToPreview);
-    };
-    reader.readAsArrayBuffer(file);
-  }
-}
-
-
-
   return (
     
     <Content>
         <div className="row col-12">
-            <TitrePage title="Liste des questions" />
+            <TitrePage title="Importation de questions" />
             <div className="row">
-                <div className="col-4 centered">
+                <div className="col-9 centered">
                     <TitreEnquete title={enquete.libelle} />
                 </div>
 
-                <div className="col-3 centered">
+                {/* <div className="col-4 centered">
                     <ButtonAdd > <i className="fas fa-plus icon-style"></i> <span>Ajouter une question</span></ButtonAdd>
-                </div>
-                <div className="col-5 centered">
-                  <div className="input-group">
-  <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} className="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload"/>
-  <button className="btn" style={{ backgroundColor: Colors.primary, color: 'white' }} onClick={() => {setPreviewModalOpen(true);}} type="button" id="inputGroupFileAddon04">Afficher</button>
-</div>
-                  {/* <Link className="nav-link" to={`/enquetes/${enquete.identifiant}/questions/upload`} data-bs-toggle="" aria-expanded="false">
-                    <ButtonDownload > <i className="fas fa-upload icon-style2"></i><span> Charger une liste</span></ButtonDownload>
-                  </Link> */}
+                </div> */}
+                <div className="col-3 centered">
+                    <ButtonDownload > <i className="fas fa-upload icon-style2"></i><span>Enregister</span></ButtonDownload>
                 </div>
             </div> 
         </div>
-      <div>
-        <div className="table-responsive">
-          <TableStyled className="table">
-            <thead>
-              <tr>
-                <th>N</th>
-                <th>Libellé</th>
-                <th>Type</th>
-                <th>Obligatoire</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            {isDataLoading ? (<tbody><tr><td colSpan="5"><div className="centered"><Loader/></div></td></tr></tbody>) : questions.length === 0 ? (
-              <tbody><tr><td colSpan="5">Aucune question trouvée</td></tr></tbody>) : (
-            <tbody>
-              {questions && questions.map((question, idx) => (
-                <tr key={question.id}>
-                  <td>{idx+1}</td>
-                  <td>{question.libelle}</td>
-                  <td>{question.type_question.libelle}</td>
-                  <td>
-                    {/* {question.est_obligatoire ? "Obligatoire" : "Facultatif"} */}
-                    <span className={`badge ${question.est_obligatoire ? "bg-danger" : "bg-success"}`}>
-                      {question.est_obligatoire ? "Oui" : "Non"}
-                    </span>
-                    
-             
-                  </td>
-                  <td>
-                     <ButtonSimple onClick={() => openEditModal(question)}>
-                       <IconAction className="fa-solid fa-pencil" color={Colors.primary} />
-                     </ButtonSimple>
-                      <ButtonSimple onClick={() =>openDeleteModal(question)}>
-                        <IconAction className="fa-solid fa-trash" color={Colors.red} />
-                      </ButtonSimple>
-                    
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-            )}
-            
-          </TableStyled>
+        <div className="centered" style={{ height: '50vh', width: '100%', padding: '20% ' }}>
+            <div className="input-group">
+  <input type="file" className="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload"/>
+  <button className="btn" style={{ backgroundColor: Colors.primary, color: 'white' }} type="button" id="inputGroupFileAddon04">Charger</button>
+</div>
         </div>
-        
-        
-      </div>
       {isEditModalOpen && questionToEdit && (
         <ModalDelete
           title="Modifier la question"
@@ -300,82 +207,12 @@ function handleFileUpload(event) {
                       </div>
                     </ModalDelete>
                   )}
-
-
-                        {isPreviewModalOpen && (
-        <ModalDelete
-          title="Aperçu des questions à enregistrer"
-          size="xl"
-          show={isPreviewModalOpen}
-          onConfirm={() => { handlePreviewQuestions(); }}
-          onClose={closePreviewModal}
-        >
-          <div>
-             <div className="table-responsive">
-          <TableStyled className="table">
-            <thead>
-              <tr>
-                <th>N</th>
-                <th>Libellé</th>
-                <th>Type</th>
-                <th>Obligatoire</th>
-                {/* <th>Actions</th> */}
-              </tr>
-            </thead>
-            { previewQuestions.length === 0 ? (
-              <tbody><tr><td colSpan="5">Aucune question trouvée</td></tr></tbody>) : (
-            <tbody>
-              {previewQuestions && previewQuestions.map((question, idx) => (
-                <tr key={question.id}>
-                   <td>{idx+1}</td>
-                  <td>{question.libelle}</td>
-                  <td>{question.type_question.libelle}</td>
-                  <td>
-                    {/* {question.est_obligatoire ? "Obligatoire" : "Facultatif"} */}
-                    <span className={`badge ${question.est_obligatoire ? "bg-danger" : "bg-success"}`}>
-                      {question.est_obligatoire ? "Oui" : "Non"}
-                    </span>
-                    
-             
-                  </td>
-                  {/* <td>
-                     <ButtonSimple onClick={() => openEditModal(question)}>
-                       <IconAction className="fa-solid fa-pencil" color={Colors.primary} />
-                     </ButtonSimple>
-                      <ButtonSimple onClick={() =>openDeleteModal(question)}>
-                        <IconAction className="fa-solid fa-trash" color={Colors.red} />
-                      </ButtonSimple>
-                    
-                  </td> */}
-                </tr>
-              ))}
-            </tbody>
-            )}
-            
-          </TableStyled>
-        </div>
-            {/* {previewQuestions.map((question, index) => (
-              <div key={index}>
-                <h6>{question.libelle}</h6>
-                <p>Type: {question.type_question?.libelle || "N/A"}</p>
-                <p>Obligatoire: {question.est_obligatoire ? "Oui" : "Non"}</p>
-                {["CHOIX UNIQUE", "CHOIX MULTIPLE"].includes(question.type_question.libelle) && (
-                  <div>
-                    <h6>Options de choix</h6>
-                    <p>{listToString(question.choix)}</p>
-                  </div>
-                )}
-              </div>
-            ))} */}
-          </div>
-        </ModalDelete>
-      )}
     </Content>
   );
 }
-export default ListeQuestionEnquete;
+export default ChargerQuestion;
 
-ListeQuestionEnquete.propTypes = {
+ChargerQuestion.propTypes = {
     enquetes: PropTypes.array,
     setEnquetes: PropTypes.func,
 };
