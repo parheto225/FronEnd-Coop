@@ -6,3 +6,10 @@ export function listToString(list) {
 export function stringToList(str) {
   return String(str).split(";").map(item => item.trim());
 }
+
+export function stringReponseToList(str) {
+  return String(str).replaceAll("[", "")
+        .replaceAll("]", "")
+        .split(",")
+        .map((e) => e.trim());
+}

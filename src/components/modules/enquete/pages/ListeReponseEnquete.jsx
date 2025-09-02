@@ -14,6 +14,7 @@ import { TableStyled } from "../../../assets/style/TableStyled";
 import TitrePage from "../composants/TitrePage";
 import { Loader } from "../../../assets/style/Loader";
 import TitreEnquete from "../composants/TitreEnquete.jsx";
+import { stringReponseToList } from "../../../../utils/stringHandling.jsx";
 
 function ListeReponseEnquete() {
     const { identifiant } = useParams();
@@ -106,7 +107,9 @@ async  function fetchQuestions() {
                                 <td>{reponse.reponses.sujet}</td>
                                 {questions.map((question) => (
                                 <td key={question.id}>
-                                    {setValue(reponseMap[question.id])}
+                                    { question.type_question.libelle === "CHOIX MULTIPLE" ? stringReponseToList(setValue(reponseMap[question.id])).map((item, index) => <span className="badge bg-success m-1" key={index}>
+                      {item}
+                    </span>) : setValue(reponseMap[question.id])}
                                 </td>
                                 ))}
                             </tr>
