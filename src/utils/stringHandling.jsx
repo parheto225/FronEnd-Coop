@@ -8,7 +8,7 @@ export function stringToList(str) {
 }
 
 export function stringReponseToList(str) {
-  return String(str).replaceAll("[", "")
+  return String(str) === "-" ? [] : String(str).replaceAll("[", "")
         .replaceAll("]", "")
         .split(",")
         .map((e) => e.trim());

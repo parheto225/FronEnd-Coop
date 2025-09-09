@@ -42,3 +42,18 @@
   justify-content: center;
   align-items: center;
 }
+
+.simple-bouton {
+    background-color: transparent;
+    color: #94A91B;
+    border: 1px solid #94A91B;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.simple-bouton:hover {
+    background-color: #94A91B;
+    color: white;
+    transition: 0.3s;
+}
