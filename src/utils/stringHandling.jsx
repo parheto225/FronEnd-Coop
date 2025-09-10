@@ -13,3 +13,9 @@ export function stringReponseToList(str) {
         .split(",")
         .map((e) => e.trim());
 }
+
+export function stringReponse(str) {
+  return String(str) === "-" ? [] : String(str).replaceAll("[", "")
+        .replaceAll("]", "").trim();
+        
+}

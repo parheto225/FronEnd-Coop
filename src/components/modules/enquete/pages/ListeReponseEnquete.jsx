@@ -14,7 +14,7 @@ import { TableStyled } from "../../../assets/style/TableStyled";
 import TitrePage from "../composants/TitrePage";
 import { Loader } from "../../../assets/style/Loader";
 import TitreEnquete from "../composants/TitreEnquete.jsx";
-import { stringReponseToList } from "../../../../utils/stringHandling.jsx";
+import { stringReponseToList, stringReponse } from "../../../../utils/stringHandling.jsx";
 
 function ListeReponseEnquete() {
     const { identifiant } = useParams();
@@ -63,7 +63,6 @@ async  function fetchQuestions() {
   }
 
   function getReponseMap(details) {
-  // details = [{question: id, valeur: ...}, ...]
   const map = {};
   details.forEach(detail => {
     map[detail.question] = detail.valeur;
@@ -87,7 +86,7 @@ async  function fetchQuestions() {
       Object.keys(reponseMap).forEach((key) => {
         if (selectedQuestions.some(q => parseInt(q.question_id) === parseInt(key) && q.export)) {
           const question =questions.find(q => q.id === parseInt(key));
-          obj[`${question.libelle}`] =  question.type_question.libelle === "CHOIX MULTIPLE" ? stringReponseToList(setValue(reponseMap[question.id])): setValue(reponseMap[key], "");
+          obj[`${question.libelle}`] =  question.type_question.libelle === "CHOIX MULTIPLE" ? stringReponse(setValue(reponseMap[question.id])): setValue(reponseMap[key], "");
         }
       });
       return obj;
@@ -170,7 +169,7 @@ async  function fetchQuestions() {
                     <thead>
                     <tr>
                         <th> {questions.length>0 ? "Sujet" : "Aucune question trouvée"}</th>
-                        {questions && questions.map((question)=><th key={question.id}> <input type="checkbox" name={question.id} onChange={handleQuestionExportChange} id="" /> {question.libelle}</th>)}
+                        {questions && questions.map((question)=><th key={question.id}> <input type="checkbox" name={question.id} checked={questionsExport.find(q => q.question_id === question.id).export} onChange={handleQuestionExportChange} /> {question.libelle}</th>)}
                         {/* <th>Actions</th> */}
                     </tr>
                     </thead>
