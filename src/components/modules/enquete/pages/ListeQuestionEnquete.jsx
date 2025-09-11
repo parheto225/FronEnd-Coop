@@ -211,10 +211,10 @@ function handleFileUpload(event) {
              
                   </td>
                   <td>
-                     <ButtonSimple onClick={() => openEditModal(question)}>
+                     <ButtonSimple onClick={() => openEditModal(question)} data-bs-toggle="tooltip" title="Modifier la question">
                        <IconAction className="fa-solid fa-pencil" color={Colors.primary} />
                      </ButtonSimple>
-                      <ButtonSimple onClick={() =>openDeleteModal(question)}>
+                      <ButtonSimple onClick={() =>openDeleteModal(question)} data-bs-toggle="tooltip" title="Supprimer la question">
                         <IconAction className="fa-solid fa-trash" color={Colors.red} />
                       </ButtonSimple>
                     

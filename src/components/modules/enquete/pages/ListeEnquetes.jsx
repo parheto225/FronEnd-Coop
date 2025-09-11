@@ -26,6 +26,7 @@ function ListeEnquetes() {
       const [formEnquete, setFormEnquete] = useState({});
       const [enqueteToEdit, setEnqueteToEdit] = useState(null);
       const [isEditModalOpen, setEditModalOpen] = useState(false);
+      const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     setDataLoading(true);
@@ -51,6 +52,16 @@ function closeEditModal() {
   setEditModalOpen(false);
   setEnqueteToEdit(null);
   setFormEnquete({});
+}
+
+  function openDeleteModal(enquete) {
+    setDeleteModalOpen(true);
+   setEnqueteToEdit(enquete);
+}
+
+function closeDeleteModal() {
+  setDeleteModalOpen(false);
+  setEnqueteToEdit(null);
 }
 
 
@@ -80,12 +91,27 @@ function closeEditModal() {
    
   }
 
+    async function handleDeleteEnquete(enqueteId) {
+    try {
+         const resultat  = await axios.delete(`${secondBaseUrl}/enquete/delete/?id_enquete=${enqueteId}`);
+        if(resultat.data.result){
+           setEnquetes(enquetes.filter((e) => e.id !== enqueteId));
+        }
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+    }
+   
+  }
+
   return (
     <Content>
         <div className="row col-12">
             <TitrePage title="Liste des Enquêtes" />
             <div className="row">
               <div className="col-5 centered">
+                 
+              </div>
+              <div className="col-4 centered">
                   <SelectCampagne campagnes={enquetes.reduce((acc, curr) => {
                       if (curr.campagne && !acc.find(item => item.id === curr.campagne.id)) {
                           acc.push(curr.campagne);
@@ -93,13 +119,11 @@ function closeEditModal() {
                       return acc;
                   }, [])} onChange={handleSelectChange} />
               </div>
-              <div className="col-4 centered">
+              <div className="col-3 centered">
                 <Link className="nav-link" to="/enquetes/new" data-bs-toggle="" aria-expanded="false">
                      <ButtonAdd > <i className="fas fa-plus icon-style"></i> <span>Ajouter une enquête</span></ButtonAdd>           
-                </Link> 
-              </div>
-              <div className="col-3 centered">
-                  <ButtonDownload > <i className="fas fa-download icon-style2"></i><span> Exporter la liste</span></ButtonDownload>
+                </Link>
+                  {/* <ButtonDownload > <i className="fas fa-download icon-style2"></i><span> Exporter la liste</span></ButtonDownload> */}
               </div>
             </div>
         </div>
@@ -127,12 +151,15 @@ function closeEditModal() {
                       {enquete.est_ouverte ? "Ouverte" : "Fermée"}
                     </span></td>
                   <td >
-                    <ButtonSimple onClick={() => openEditModal(enquete)}>
+                    <ButtonSimple onClick={() => openEditModal(enquete)} data-bs-toggle="tooltip" title="Modifier l'enquête">
                        <IconAction className="fa-solid fa-pencil" color={Colors.primary} />
                      </ButtonSimple>
                     {/* <Link to={`/enquetes/${enquete.id}`}><IconAction className="fa fa-eye icon-action-style"></IconAction></Link> */}
-                    <Link to={`/enquetes/${enquete.identifiant}/questions`}><IconAction className="fa-solid fa-question"></IconAction></Link>
-                    <Link to={`/enquetes/${enquete.identifiant}/reponses`}><IconAction className="fa-solid fa-comment"></IconAction></Link>
+                    <Link to={`/enquetes/${enquete.identifiant}/questions`}  data-bs-toggle="tooltip" title="Modifier les questions"><IconAction className="fa-solid fa-question"></IconAction></Link>
+                    <Link to={`/enquetes/${enquete.identifiant}/reponses`} data-bs-toggle="tooltip" title="Modifier les réponses"><IconAction className="fa-solid fa-comment"></IconAction></Link>
+                    <ButtonSimple onClick={() =>openDeleteModal(enquete)} data-bs-toggle="tooltip" title="Supprimer l'enquête">
+                        <IconAction className="fa-solid fa-trash" color={Colors.red} />
+                      </ButtonSimple>
                   </td>
                 </tr>
               ))}
@@ -209,6 +236,15 @@ function closeEditModal() {
             </div>
         </ModalDelete>
       )}
+
+      {isDeleteModalOpen && enqueteToEdit && (
+                          <ModalDelete title="Supprimer l'enquête" show={isDeleteModalOpen} onConfirm={() => handleDeleteEnquete(enqueteToEdit.id)} onClose={closeDeleteModal}>
+                            <div  style={{ textAlign: 'center' }}>
+                              <p>Êtes-vous sûr de vouloir supprimer cette enquête ?</p>
+                            <q style={{ fontSize: '1.2em', fontWeight: 'bold' }}>{enqueteToEdit.libelle}</q>
+                            </div>
+                          </ModalDelete>
+                        )}
     </Content>
   );
 }
