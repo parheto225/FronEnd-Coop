@@ -7,7 +7,7 @@ import { EnqueteContext } from "../../../context";
 import Content from "../../../Content";
 import "../../../assets/style/SelectCampagne.css";
 import "../../../assets/style/icon.css";
-import {ButtonAdd, ButtonDownload} from "../../../assets/style/Buttons";
+import {ButtonAdd} from "../../../assets/style/Buttons";
 import { TableStyled } from "../../../assets/style/TableStyled";
 import {IconAction} from "../../../assets/style/Icon";
 

@@ -47,6 +47,7 @@ import ListeQuestionEnquete from './modules/enquete/pages/ListeQuestionEnquete';
 import ListeReponseEnquete from './modules/enquete/pages/ListeReponseEnquete';
 import EnregistrerEnquete from './modules/enquete/pages/EnregisterEnquete';
 import ChargerQuestion from './modules/enquete/pages/ChargerQuestions';
+import Membre from './modules/enquete/pages/Membres';
 
 // Lazy load uniquement pour Login
 const NewConnexion = lazy(() => import('./auth/NewLogin'));
@@ -103,6 +104,7 @@ function Main(){
                 <Route path="/list-projets/" element={<ListeProj />} />
                 <Route path="/views-projet/:projetID/" element={<ViewProj />} />
                 <Route path="/list-campagnes/" element={<CampagneList />} />
+                <Route path="/list-membres/" element={<Membre />} />
 
                  {/*ANALYSE RDUE*/}
                 <Route path="/analyses/" element={<Analyse />} />
