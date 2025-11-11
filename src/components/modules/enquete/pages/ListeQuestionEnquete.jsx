@@ -173,9 +173,9 @@ function handleFileUpload(event) {
                 </div>
                 <div className="col-5 centered">
                   <div className="input-group">
-  <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} className="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload"/>
-  <button className="btn" style={{ backgroundColor: Colors.primary, color: 'white' }} onClick={() => {setPreviewModalOpen(true);}} type="button" id="inputGroupFileAddon04">Afficher</button>
-</div>
+                    <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} className="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload"/>
+                    <button className="btn" style={{ backgroundColor: Colors.primary, color: 'white' }} onClick={() => {setPreviewModalOpen(true);}} type="button" id="inputGroupFileAddon04">Afficher</button>
+                  </div>
                   {/* <Link className="nav-link" to={`/enquetes/${enquete.identifiant}/questions/upload`} data-bs-toggle="" aria-expanded="false">
                     <ButtonDownload > <i className="fas fa-upload icon-style2"></i><span> Charger une liste</span></ButtonDownload>
                   </Link> */}

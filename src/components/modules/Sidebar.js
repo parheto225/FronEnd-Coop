@@ -163,7 +163,7 @@ function Sidebar({sideID,parent}){
                       </div>
                     
 
-                      <div className="nav-item-wrapper">
+                      {/* <div className="nav-item-wrapper">
                           <Link className="nav-link" to="" data-bs-toggle="" aria-expanded="false">
                               <div className="d-flex align-items-center"><span className="nav-link-text" style={{
                                         color: "#94a91b",                                        
@@ -177,7 +177,7 @@ function Sidebar({sideID,parent}){
                               </i>
                                 Enquêtes</span></div>
                           </Link>
-                      </div>                   
+                      </div>                    */}
                   </li>
 
                       <div className="nav-item-wrapper">
@@ -445,7 +445,7 @@ function Sidebar({sideID,parent}){
                                         lineHeight: "normal", 
                                       }}>
                                 <i className="text-start" style={{marginLeft: "-20px", marginRight: "10px"}}>
-                                    <img src={IconPlanting} width="12%" height="100%" alt=""/>
+                                    <img src={IconEnquetes} width="12%" height="100%" alt=""/>
                                 </i> {t("Liste des enquêtes")}
                                   {/* Géoportail planting */}
                                   </span></div>
@@ -462,7 +462,7 @@ function Sidebar({sideID,parent}){
                                         lineHeight: "normal", 
                                       }}>
                                 <i className="text-start" style={{marginLeft: "-20px", marginRight: "10px"}}>
-                                    <img src={IconPlanting} width="12%" height="100%" alt=""/>
+                                    <img src={IconEnquetes} width="12%" height="100%" alt=""/>
                                 </i> {t("Créer une enquête")}
                                   {/* Géoportail planting */}
                                   </span></div>
