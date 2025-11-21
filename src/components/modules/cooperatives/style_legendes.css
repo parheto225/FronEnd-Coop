@@ -1,0 +1,42 @@
+#legend {
+  position: absolute;
+  bottom: 50%;
+  right: 20px;
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  max-height: 80vh;
+  overflow-y: auto;
+  width: 220px;
+  z-index: 1000; /* ← AJOUT IMPORTANT */
+}
+
+
+#legend h4 {
+  margin: 0 0 10px;
+  text-align: center;
+  font-size: 15px;
+}
+
+#legend ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#legend li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+#legend span {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  border: 1px solid #555;
+}

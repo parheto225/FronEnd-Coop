@@ -22,7 +22,9 @@ import axios from 'axios';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 
 import BaseUrl from "../../config/baseUrl";
-import { MarkerCluster } from 'leaflet';
+import "./style_legendes.css";
+
+import { useMap } from 'react-leaflet';
 
 const url = BaseUrl();
 const { BaseLayer, Overlay } = LayersControl;
@@ -44,8 +46,162 @@ const CarteCoopGpt = () => {
         contours: false,
         classe: true,
         parc: true,
-        Buffer: false
+        Buffer: false,
+        ocs_2020: false,
     });
+const legendeOCSBinaire = [
+      {
+    "valeur": 1,
+    "couleur": "#00441b",
+    "style":"ocs2020_style",
+    "categorie": "TOUT"
+  },
+  {
+    "valeur": 2,
+    "couleur": "#00441b",
+    "style":"ocs2020_style_foret",
+    "categorie": "FORET"
+  }, {
+    "valeur": 3,
+    "couleur": "#bf812d",
+     "style":"ocs2020_style_non_foret",
+    "categorie": "NON FORET"
+  }];
+    const [categoriesOCSCheckedSelected, setCategoriesOCSCheckedBinaire] = useState(legendeOCSBinaire[0]);
+
+
+
+    const legendeOCS = [
+  {
+    "valeur": 1,
+    "couleur": "#00441b",
+    "categorie": "Forêt dense"
+  },
+  {
+    "valeur": 2,
+    "couleur": "#006d2c",
+    "categorie": "Forêt claire"
+  },
+  {
+    "valeur": 3,
+    "couleur": "#238b45",
+    "categorie": "Forêt galerie"
+  },
+  {
+    "valeur": 4,
+    "couleur": "#41ae76",
+    "categorie": "Forêt secondaire"
+  },
+  {
+    "valeur": 5,
+    "couleur": "#78c679",
+    "categorie": "Mangrove"
+  },
+  {
+    "valeur": 6,
+    "couleur": "#a1d99b",
+    "categorie": "Reboisement"
+  },
+  {
+    "valeur": 7,
+    "couleur": "#c7e9c0",
+    "categorie": "Forêt hydromorphe"
+  },
+  {
+    "valeur": 8,
+    "couleur": "#8c510a",
+    "categorie": "Café"
+  },
+  {
+    "valeur": 9,
+    "couleur": "#bf812d",
+    "categorie": "Cacao"
+  },
+  {
+    "valeur": 10,
+    "couleur": "#dfc27d",
+    "categorie": "Hévéa"
+  },
+  {
+    "valeur": 11,
+    "couleur": "#f6e8c3",
+    "categorie": "Palmier à huile"
+  },
+  {
+    "valeur": 12,
+    "couleur": "#fde0dd",
+    "categorie": "Coco"
+  },
+  {
+    "valeur": 13,
+    "couleur": "#fa9fb5",
+    "categorie": "Anacarde"
+  },
+  {
+    "valeur": 14,
+    "couleur": "#c51b8a",
+    "categorie": "Arboriculture"
+  },
+  {
+    "valeur": 15,
+    "couleur": "#7f0000",
+    "categorie": "Autres cultures"
+  },
+  {
+    "valeur": 16,
+    "couleur": "#d9f0a3",
+    "categorie": "Savane arborée"
+  },
+  {
+    "valeur": 17,
+    "couleur": "#addd8e",
+    "categorie": "Formation arbustive"
+  },
+  {
+    "valeur": 18,
+    "couleur": "#78c679",
+    "categorie": "Herbacées"
+  },
+  {
+    "valeur": 19,
+    "couleur": "#2b8cbe",
+    "categorie": "Eau"
+  },
+  {
+    "valeur": 20,
+    "couleur": "#bae4bc",
+    "categorie": "Zone marécageuse"
+  },
+  {
+    "valeur": 21,
+    "couleur": "#252525",
+    "categorie": "Habitations"
+  },
+  {
+    "valeur": 22,
+    "couleur": "#969696",
+    "categorie": "Roche"
+  },
+  {
+    "valeur": 23,
+    "couleur": "#cccccc",
+    "categorie": "Sol nu"
+  }
+];
+const [categoriesOCSChecked, setCategoriesOCSChecked] = useState(legendeOCS.map(categorie => categorie.valeur));
+
+
+function toggleCategorie(numCategorie) {
+      const index = categoriesOCSChecked.indexOf(numCategorie);
+    if (index > -1) {
+     setCategoriesOCSChecked(categoriesOCSChecked.filter(item => item !== numCategorie));
+    } else {
+        setCategoriesOCSChecked([...categoriesOCSChecked, numCategorie]);
+    }
+    }
+
+
+
 
 
     const DefaultIcon = useMemo(() => L.icon({
@@ -175,6 +331,61 @@ const CarteCoopGpt = () => {
     const toggleLayer = useCallback((layer) => {
         setLayers(prev => ({ ...prev, [layer]: !prev[layer] }));
     }, []);
+    // Mémoriser le SLD pour éviter les re-rendus inutiles
+const memoizedSLD = useMemo(() => generateSLD(), [categoriesOCSChecked]);
+
+
+function WMSLayer({ url,  layers, SLD, params = {} }) {
+  const map = useMap();
+  useEffect(() => {
+    if (!map) return;
+   const wmsParams = {
+      layers,
+      format: params.format || 'image/png',
+      transparent: params.transparent ?? true,
+      version: params.version || '1.1.0',
+      tiled: params.tiled ?? true,
+      styles: categoriesOCSCheckedSelected.style || null,
+      ...params
+    };
+    const wms = L.tileLayer.wms(url, wmsParams).addTo(map);
+
+
+    return () => {
+      if (map && wms) map.removeLayer(wms);
+    };
+  }, [url, map, layers, params]);
+
+  return null;
+}
+
+function generateSLD() {
+  let entries = legendeOCS
+    .filter(categorie => categoriesOCSChecked.includes(categorie.valeur))
+    .map(categorie => `
+      <ColorMapEntry color="${categorie.couleur}" quantity="${categorie.valeur}" opacity="1" label="${categorie.categorie}"/>
+    `).join("");
+
+  return `
+<StyledLayerDescriptor version="1.0.0"
+xmlns="http://www.opengis.net/sld"
+xmlns:ogc="http://www.opengis.net/ogc">
+  <NamedLayer>
+    <Name>occupation_sol</Name>
+    <UserStyle>
+      <FeatureTypeStyle>
+        <Rule>
+          <RasterSymbolizer>
+            <ColorMap type="values">
+              ${entries}
+            </ColorMap>
+          </RasterSymbolizer>
+        </Rule>
+      </FeatureTypeStyle>
+    </UserStyle>
+  </NamedLayer>
+</StyledLayerDescriptor>`;
+}
 
     
 
@@ -349,8 +560,17 @@ const CarteCoopGpt = () => {
                 </div>
                 <br />
                 <hr style={{height: "2px", borderWidth: "0", color: "#000", backgroundColor: "#000"}} />
+                <div className="legend" style={{listStyle: null, marginTop: "10px"}}>
+                <h4 style={{marginTop: "0px"}}>{t("CARTES D'OCCUPATION DU SOL")}</h4>
+                    <label>
+                        <input type="checkbox" checked={layers.ocs_2020} onChange={() => toggleLayer('ocs_2020')} />
+                        <span style={{fontWeight: "bold", fontSize: "20px"}}><i> {t("Année 2020")} </i></span>
+                    </label>
+                    <br />
+                    
+                </div>
                 {/* Section des basemaps */}
-                <h4 style={{marginTop: "330px"}}>{t("BASEMAP")}</h4>
+                <h4 style={{marginTop: "300px"}}>{t("BASEMAP")}</h4>
                 {/* <label>
                     <input type="radio" name="basemap" checked={baseMap === 'gSatellelite'} onChange={() => changeBaseMap('gSatellelite ')} />
                     <span>Google Satellite</span>
@@ -369,6 +589,7 @@ const CarteCoopGpt = () => {
                     <input type="radio" name="basemap" checked={baseMap === 'osm'} onChange={() => changeBaseMap('osm')} />
                     <span style={{fontWeight: "bold", fontSize: "20px",  padding: "10px"}}>OpenStreetMap</span>
                 </label>
+                
                 <br />
                 <br />
                 <br />
@@ -379,13 +600,20 @@ const CarteCoopGpt = () => {
             {/* Map display */}
             <div style={{flex: 1, position: "relative", height: "90vh", overflow: "hidden"}}>
                 <MapContainer center={[7.54, -5.55]} zoom={6.5} style={{ height: '75vh', width: '100%' }}>
-                {/* Définir le basemap en fonction du choix */} gSatellelite
+                {/* Définir le basemap en fonction du choix */}
+               { layers.ocs_2020 ? (
+                    <WMSLayer
+                    url="http://localhost:8080/geoserver/sf/wms"
+                    layers="sf:ocs2020"
+                    params={{ format: 'image/png', transparent: true, version: '1.1.0', tiled: true}}
+                    />
+                ) : null }
                     <TileLayer
                         url={
                             baseMap === 'gSatellelite' ? 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}' :
                             baseMap === 'osm' ? 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' :
                             baseMap === 'google' ? 'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}' :
-                            baseMap === 'google-street' ? 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}' : ''
+                            baseMap === 'google-street' ? 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}' :''
                         }
                     />
                     
@@ -478,7 +706,29 @@ const CarteCoopGpt = () => {
                         <li>{t("Données Invalides : Ensemble des parcelles ayant des irrégularités de polygones et de positionnement")}
                         </li>
                     </ul>
-                </div>    
+                </div>
+                { layers.ocs_2020 && (
+                <div id="legend">
+                    <h4>OCCUPATION DU SOL</h4>
+                    <ul>
+
+                        {legendeOCSBinaire.map((item) => (
+                            <li key={item.valeur}>
+                            <input type="radio" checked={categoriesOCSCheckedSelected.valeur === item.valeur} onChange={()=>setCategoriesOCSCheckedBinaire(item)} style={{marginRight: "8px"}} />
+                             <b>{item.categorie}</b>
+                            </li>
+                        ))}
+                        
+                        {/* {legendeOCS.map((item) => (
+                            <li key={item.valeur}>
+                            <input type="checkbox" checked={categoriesOCSChecked.includes(item.valeur)} onChange={()=>toggleCategorie(item.valeur)} style={{marginRight: "8px"}} />
+                            <span style={{background: item.couleur}}></span> {item.categorie}
+                            </li>
+                        ))} */}
+                    </ul>
+                </div>
+                )}
+                 
             </div>
         </div>
     );
