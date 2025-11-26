@@ -1,6 +1,6 @@
 #legend {
   position: absolute;
-  bottom: 50%;
+  bottom: 15%;
   right: 20px;
   padding: 12px;
   background: white;
@@ -10,7 +10,7 @@
   font-size: 13px;
   max-height: 80vh;
   overflow-y: auto;
-  width: 220px;
+  width: 320px;
   z-index: 1000; /* ← AJOUT IMPORTANT */
 }
 

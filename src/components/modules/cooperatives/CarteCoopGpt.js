@@ -5,10 +5,9 @@ import limit_ci from '../../data/limite_ci.json';
 import limit_ghana from '../../data/map_ghana.json';
 import { useTranslation } from "react-i18next";
 import L from 'leaflet';
-import { FeatureGroup, LayersControl, MapContainer, Marker, GeoJSON, ScaleControl, TileLayer, Popup } from 'react-leaflet';
+import {LayersControl, MapContainer, Marker, GeoJSON, ScaleControl, TileLayer, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import MapPrint from "./MapPrint";
-import osm from '../../osm-providers';
 import agroforest from '../../data/new_agroforets.json';
 import contours from '../../data/capressa.json'
 import classe from '../../data/new_fc.json';
@@ -20,6 +19,8 @@ import risque_modere from '../../data/risque_modere.json';
 import UserContext from '../../context/useContext';
 import axios from 'axios';
 import MarkerClusterGroup from 'react-leaflet-cluster';
+import PopupParcelle from '../cooperatives/components/InformationParcelle';
+import { createRoot } from "react-dom/client";
 
 import BaseUrl from "../../config/baseUrl";
 import "./style_legendes.css";
@@ -54,139 +55,42 @@ const legendeOCSBinaire = [
     "valeur": 1,
     "couleur": "#00441b",
     "style":"ocs2020_style",
-    "categorie": "TOUT"
+    "categorie": "Toutes les couches"
   },
   {
     "valeur": 2,
     "couleur": "#00441b",
     "style":"ocs2020_style_foret",
-    "categorie": "FORET"
-  }, {
-    "valeur": 3,
-    "couleur": "#bf812d",
-     "style":"ocs2020_style_non_foret",
-    "categorie": "NON FORET"
+    "categorie": "Forêts"
   }];
     const [categoriesOCSCheckedSelected, setCategoriesOCSCheckedBinaire] = useState(legendeOCSBinaire[0]);
 
 
 
-    const legendeOCS = [
-  {
-    "valeur": 1,
-    "couleur": "#00441b",
-    "categorie": "Forêt dense"
-  },
-  {
-    "valeur": 2,
-    "couleur": "#006d2c",
-    "categorie": "Forêt claire"
-  },
-  {
-    "valeur": 3,
-    "couleur": "#238b45",
-    "categorie": "Forêt galerie"
-  },
-  {
-    "valeur": 4,
-    "couleur": "#41ae76",
-    "categorie": "Forêt secondaire"
-  },
-  {
-    "valeur": 5,
-    "couleur": "#78c679",
-    "categorie": "Mangrove"
-  },
-  {
-    "valeur": 6,
-    "couleur": "#a1d99b",
-    "categorie": "Reboisement"
-  },
-  {
-    "valeur": 7,
-    "couleur": "#c7e9c0",
-    "categorie": "Forêt hydromorphe"
-  },
-  {
-    "valeur": 8,
-    "couleur": "#8c510a",
-    "categorie": "Café"
-  },
-  {
-    "valeur": 9,
-    "couleur": "#bf812d",
-    "categorie": "Cacao"
-  },
-  {
-    "valeur": 10,
-    "couleur": "#dfc27d",
-    "categorie": "Hévéa"
-  },
-  {
-    "valeur": 11,
-    "couleur": "#f6e8c3",
-    "categorie": "Palmier à huile"
-  },
-  {
-    "valeur": 12,
-    "couleur": "#fde0dd",
-    "categorie": "Coco"
-  },
-  {
-    "valeur": 13,
-    "couleur": "#fa9fb5",
-    "categorie": "Anacarde"
-  },
-  {
-    "valeur": 14,
-    "couleur": "#c51b8a",
-    "categorie": "Arboriculture"
-  },
-  {
-    "valeur": 15,
-    "couleur": "#7f0000",
-    "categorie": "Autres cultures"
-  },
-  {
-    "valeur": 16,
-    "couleur": "#d9f0a3",
-    "categorie": "Savane arborée"
-  },
-  {
-    "valeur": 17,
-    "couleur": "#addd8e",
-    "categorie": "Formation arbustive"
-  },
-  {
-    "valeur": 18,
-    "couleur": "#78c679",
-    "categorie": "Herbacées"
-  },
-  {
-    "valeur": 19,
-    "couleur": "#2b8cbe",
-    "categorie": "Eau"
-  },
-  {
-    "valeur": 20,
-    "couleur": "#bae4bc",
-    "categorie": "Zone marécageuse"
-  },
-  {
-    "valeur": 21,
-    "couleur": "#252525",
-    "categorie": "Habitations"
-  },
-  {
-    "valeur": 22,
-    "couleur": "#969696",
-    "categorie": "Roche"
-  },
-  {
-    "valeur": 23,
-    "couleur": "#cccccc",
-    "categorie": "Sol nu"
-  }
+   const legendeOCS = [
+  { "valeur": 1,  "couleur": "#00441b", "categorie": "Forêt dense" },
+  { "valeur": 2,  "couleur": "#006d2c", "categorie": "Forêt claire" },
+  { "valeur": 3,  "couleur": "#238b45", "categorie": "Forêt galerie" },
+  { "valeur": 4,  "couleur": "#41ae76", "categorie": "Forêt secondaire/forêt dégradée" },
+  { "valeur": 5,  "couleur": "#78c679", "categorie": "Mangrove" },
+  { "valeur": 6,  "couleur": "#a1d99b", "categorie": "Plantation forestière/Reboisement" },
+  { "valeur": 7,  "couleur": "#c7e9c0", "categorie": "Forêt marécageuse/Forêt sur sol hydromorphe" },
+  { "valeur": 8,  "couleur": "#8c510a", "categorie": "Plantation de Café" },
+  { "valeur": 9,  "couleur": "#bf812d", "categorie": "Plantation de Cacao" },
+  { "valeur": 10, "couleur": "#dfc27d", "categorie": "Plantation d’Hévéa" },
+  { "valeur": 11, "couleur": "#f6e8c3", "categorie": "Plantation de Palmier à huile" },
+  { "valeur": 12, "couleur": "#fde0dd", "categorie": "Plantation de Coco" },
+  { "valeur": 13, "couleur": "#fa9fb5", "categorie": "Plantation d’Anacarde" },
+  { "valeur": 14, "couleur": "#c51b8a", "categorie": "Plantation fruitière / Arboricultures" },
+  { "valeur": 15, "couleur": "#7f0000", "categorie": "Aménagement agricole/Autres cultures/Vergers/Jachères" },
+  { "valeur": 16, "couleur": "#d9f0a3", "categorie": "Savane arborée" },
+  { "valeur": 17, "couleur": "#addd8e", "categorie": "Formations arbustives/ Fourrés" },
+  { "valeur": 18, "couleur": "#78c679", "categorie": "Formations herbacées" },
+  { "valeur": 19, "couleur": "#2b8cbe", "categorie": "Plan d’eau, Cours et voies d’eau" },
+  { "valeur": 20, "couleur": "#bae4bc", "categorie": "Zone marécageuse" },
+  { "valeur": 21, "couleur": "#252525", "categorie": "Habitat humain, Infrastructures" },
+  { "valeur": 22, "couleur": "#969696", "categorie": "Affleurement rocheux" },
+  { "valeur": 23, "couleur": "#cccccc", "categorie": "Sol nu" }
 ];
 const [categoriesOCSChecked, setCategoriesOCSChecked] = useState(legendeOCS.map(categorie => categorie.valeur));
 
@@ -264,17 +168,16 @@ function toggleCategorie(numCategorie) {
     // };
 
     const onEachFeature = (feature, layer) => {
+        
         if (feature.properties) {
             const name = feature.properties.NOM || feature.properties.Nom || "Inconnu";
-            layer.bindPopup(`
-                📌 <b>NUMERO_ID:</b> ${feature.properties.NUMERO_ID_}<br>
-                🧾 <b>Code:</b> ${feature.properties.CODE}<br>
-                🧑‍🌾 <b>Nom:</b> ${name}<br>
-                📞 <b>Contact:</b> ${feature.properties.NUM_TEL}<br>
-                📐 <b>Superficie:</b> ${feature.properties.SUPERFICIE.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} Ha<br>
-                🗓️ <b>Année Création:</b> ${feature.properties.ANNEE_NAIS}
-            `);
-        }
+            // create a DOM node and mount React component into it
+            const popupNode = document.createElement("div");
+            const root = createRoot(popupNode);
+            root.render(<PopupParcelle feature={feature} />);
+
+            layer.bindPopup(popupNode);
+                    }
     };
 
     const onEachFeatureAgroforet = (feature, layer) => {
@@ -564,13 +467,25 @@ xmlns:ogc="http://www.opengis.net/ogc">
                 <h4 style={{marginTop: "0px"}}>{t("CARTES D'OCCUPATION DU SOL")}</h4>
                     <label>
                         <input type="checkbox" checked={layers.ocs_2020} onChange={() => toggleLayer('ocs_2020')} />
-                        <span style={{fontWeight: "bold", fontSize: "20px"}}><i> {t("Année 2020")} </i></span>
+                        <span style={{fontWeight: "bold", fontSize: "20px"}}><i> {t("BNETD 2020")} </i></span>
                     </label>
                     <br />
+                     {
+                     layers.ocs_2020 &&
+                     
+                     legendeOCSBinaire.map((item) => (
+                        <>
+                        <label key={item.valeur} style={{marginLeft:"20px"}}>
+                            <input type="radio" checked={categoriesOCSCheckedSelected.valeur === item.valeur} onChange={()=>setCategoriesOCSCheckedBinaire(item)} style={{marginRight: "8px"}} />
+                             <b>{item.categorie}</b>
+                            </label> <br />
+                        </>
+                            
+                        ))}
                     
                 </div>
                 {/* Section des basemaps */}
-                <h4 style={{marginTop: "300px"}}>{t("BASEMAP")}</h4>
+                <h4 style={{marginTop: "245px"}}>{t("BASEMAP")}</h4>
                 {/* <label>
                     <input type="radio" name="basemap" checked={baseMap === 'gSatellelite'} onChange={() => changeBaseMap('gSatellelite ')} />
                     <span>Google Satellite</span>
@@ -591,10 +506,7 @@ xmlns:ogc="http://www.opengis.net/ogc">
                 </label>
                 
                 <br />
-                <br />
-                <br />
-                <br />
-                <br />
+                
             </div>
 
             {/* Map display */}
@@ -709,22 +621,13 @@ xmlns:ogc="http://www.opengis.net/ogc">
                 </div>
                 { layers.ocs_2020 && (
                 <div id="legend">
-                    <h4>OCCUPATION DU SOL</h4>
-                    <ul>
-
-                        {legendeOCSBinaire.map((item) => (
+                    <h4>LEGENDE</h4>
+                    <ul>                    
+                        {legendeOCS.filter((item) => categoriesOCSCheckedSelected.valeur === 2 ? item.valeur<8 : item.valeur<24).map((item) => ((
                             <li key={item.valeur}>
-                            <input type="radio" checked={categoriesOCSCheckedSelected.valeur === item.valeur} onChange={()=>setCategoriesOCSCheckedBinaire(item)} style={{marginRight: "8px"}} />
-                             <b>{item.categorie}</b>
-                            </li>
-                        ))}
-                        
-                        {/* {legendeOCS.map((item) => (
-                            <li key={item.valeur}>
-                            <input type="checkbox" checked={categoriesOCSChecked.includes(item.valeur)} onChange={()=>toggleCategorie(item.valeur)} style={{marginRight: "8px"}} />
                             <span style={{background: item.couleur}}></span> {item.categorie}
                             </li>
-                        ))} */}
+                        )))}
                     </ul>
                 </div>
                 )}

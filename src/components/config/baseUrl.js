@@ -4,4 +4,4 @@ export default function BaseUrl(){
     return "http://127.0.0.1:8000/api";
 }
 
-export const secondBaseUrl = "http://127.0.0.1:8000/api-mobile";
+export const secondBaseUrl = "http://localhost:8000/api-mobile";
