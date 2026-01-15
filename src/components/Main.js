@@ -122,16 +122,16 @@ function Main(){
             </Switch>
             <UtilisateurProvider>
                 <CampagneProvider>
-                <EnqueteProvider>
-                    <Switch>
-                        <Route path="/enquetes/" element={<ListeEnquetes />} />
-                        <Route path="/enquetes/new" element={<EnregistrerEnquete />} />
-                        <Route path="/enquetes/:identifiant/questions" element={<ListeQuestionEnquete />} />
-                        <Route path="/enquetes/:identifiant/questions/upload" element={<ChargerQuestion />} />
-                        <Route path="/enquetes/:identifiant/reponses" element={<ListeReponseEnquete />} />
-                    </Switch>
-                </EnqueteProvider>
-            </CampagneProvider>
+                    <EnqueteProvider>
+                        <Switch>
+                            <Route path="/enquetes/" element={<ListeEnquetes />} />
+                            <Route path="/enquetes/new" element={<EnregistrerEnquete />} />
+                            <Route path="/enquetes/:identifiant/questions" element={<ListeQuestionEnquete />} />
+                            <Route path="/enquetes/:identifiant/questions/upload" element={<ChargerQuestion />} />
+                            <Route path="/enquetes/:identifiant/reponses" element={<ListeReponseEnquete />} />
+                        </Switch>
+                    </EnqueteProvider>
+                </CampagneProvider>
             </UtilisateurProvider>
             
             

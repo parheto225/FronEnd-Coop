@@ -40,3 +40,25 @@
   margin-right: 8px;
   border: 1px solid #555;
 }
+
+#occupation-sol {
+  position: absolute;
+  top: 50%;
+  left: 20px; /* <-- déplacé à gauche */
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  max-height: 50vh;
+  overflow-y: auto;
+  width: 320px;
+  z-index: 1000; /* ← AJOUT IMPORTANT */
+}
+
+#occupation-sol h4 {
+  margin: 0 0 10px;
+  text-align: center;
+  font-size: 15px;
+}

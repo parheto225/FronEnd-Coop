@@ -1,7 +1,7 @@
 import "./style_legendes.css";
 function LegendeCarteOcs() {
     return (
-              <div id="legend">
+  <div id="legend">
   <h4>Occupation du sol</h4>
   <ul>
     <li><span style={{background:"#00441b"}}></span> Forêt dense</li>

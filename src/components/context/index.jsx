@@ -1,6 +1,6 @@
 import axios from "axios";
 import { secondBaseUrl } from "../config/baseUrl";
-import { createContext, useState , useEffect, useContext} from "react";
+import { createContext, useState , useEffect, useContext, useCallback, useMemo} from "react";
 import UserContext from "../context/useContext";
 
 
@@ -29,6 +29,42 @@ export const EnqueteProvider = ( {children})=>{
     return <EnqueteContext.Provider value={{enquetes, setEnquetes}}>
         {children}
     </EnqueteContext.Provider>
+}
+
+export const OCSContext = createContext({
+    codeParcelle: null,         // La valeur par défaut pour codeParcelle
+    setCodeParcelle: () => {},  // Une fonction vide sécurisée pour setCodeParcelle
+    isLoading: false,           // Valeur par défaut pour isLoading
+    composition: []             // Valeur par défaut pour composition
+})
+export const OCSProvider = ( {children})=>{
+  const [codeParcelle, setCodeParcelle] = useState(null);
+      const [isLoading, setLoading] = useState(false);
+       const [composition, setComposition] = useState([]);    
+     async function fetchCompositionParcellaire(){
+        try {
+            const resp =  await axios.get(`${secondBaseUrl}/ocs/occupation-du-sol/`);
+            const  proportions  = resp.data;
+            setComposition(proportions.data);
+            console.log(proportions.data)
+        } catch (error) {
+             console.error(error);  
+        } finally{
+          setLoading(false);
+        }    
+     }
+
+      useEffect(() => {  
+            if (codeParcelle !== null) {
+              setLoading(true);
+              fetchCompositionParcellaire();
+              console.log("Code parcelle dans le provider OCS :", codeParcelle);
+            }
+        }, [codeParcelle]);
+
+    return <OCSContext.Provider value={{codeParcelle, setCodeParcelle, fetchCompositionParcellaire, isLoading, composition}}>
+        {children}
+    </OCSContext.Provider>
 }
 
 export const CampagneContext = createContext()

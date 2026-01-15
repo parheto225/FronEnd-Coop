@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useContext } from 'react';
 import markerIcon from '../../assets/marker-icon.png';
 import loader from '../../assets/animation.gif';
 import limit_ci from '../../data/limite_ci.json';
@@ -19,18 +19,20 @@ import risque_modere from '../../data/risque_modere.json';
 import UserContext from '../../context/useContext';
 import axios from 'axios';
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import PopupParcelle from '../cooperatives/components/InformationParcelle';
+import PopupParcelle from './components/InformationParcelle';
 import { createRoot } from "react-dom/client";
 
 import BaseUrl from "../../config/baseUrl";
 import "./style_legendes.css";
 
 import { useMap } from 'react-leaflet';
+import CompositionParcellaire from './components/CompositionParcellaire';
 
 const url = BaseUrl();
 const { BaseLayer, Overlay } = LayersControl;
 
 const CarteCoopGpt = () => {
+    const [codeParcelle, setCodeParcelle] = useState(null);
     const [geoData, setGeoData] = useState({
         limit_ci: limit_ci,
         limit_ghana: limit_ghana
@@ -50,6 +52,14 @@ const CarteCoopGpt = () => {
         Buffer: false,
         ocs_2020: false,
     });
+    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+// const [isShowCompositionParcellaire, setIsShowCompositionParcellaire] = useState(false);
+
+
+function toggleCompositionParcellaire(codeParcelle) {
+  setDeleteModalOpen(!isDeleteModalOpen);
+  setCodeParcelle(codeParcelle);
+}
 const legendeOCSBinaire = [
       {
     "valeur": 1,
@@ -105,7 +115,13 @@ function toggleCategorie(numCategorie) {
     }
 
 
+  function openDeleteModal(enquete) {
+    setDeleteModalOpen(true);
+}
 
+function closeDeleteModal() {
+  setDeleteModalOpen(false);
+}
 
 
     const DefaultIcon = useMemo(() => L.icon({
@@ -131,7 +147,7 @@ function toggleCategorie(numCategorie) {
         setGeoData({ limit_ci, limit_ghana });
     }, []);
 
-    //1. Optimisation du Chargement des Données | correction de la requêtes avec un meilleurs chargement des données
+    // 1. Optimisation du Chargement des Données | correction de la requêtes avec un meilleurs chargement des données
     useEffect(() => {
         if (!user) return;    
         setLoading(true);
@@ -171,13 +187,22 @@ function toggleCategorie(numCategorie) {
         
         if (feature.properties) {
             const name = feature.properties.NOM || feature.properties.Nom || "Inconnu";
+            const sup = feature.properties.SUPERFICIE ?? "";
             // create a DOM node and mount React component into it
             const popupNode = document.createElement("div");
             const root = createRoot(popupNode);
-            root.render(<PopupParcelle feature={feature} />);
+            root.render(<PopupParcelle>
+                <div>📌 <b>NUMERO_ID:</b> {feature.properties.NUMERO_ID_}</div>
+                <div>🧾 <b>Code:</b> {feature.properties.CODE}</div>
+                <div>🧑‍🌾 <b>Nom:</b> {name}</div>
+                <div>📞 <b>Contact:</b> {feature.properties.NUM_TEL}</div>
+                <div>📐 <b>Superficie:</b> {String(sup).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} Ha</div>
+                <div>🗓️ <b>Année Création:</b> {feature.properties.ANNEE_NAIS}</div>
+                <button style={{textDecoration:"none", background:"none", border:"none", color:"blue", cursor:"pointer", padding:0}} onClick={()=> toggleCompositionParcellaire(feature.properties.CODE)}>{isDeleteModalOpen ? "Masquer l'occupation sol" : "Afficher l'occupation du sol"}</button>
+            </PopupParcelle>);
 
             layer.bindPopup(popupNode);
-                    }
+            }
     };
 
     const onEachFeatureAgroforet = (feature, layer) => {
@@ -293,6 +318,7 @@ xmlns:ogc="http://www.opengis.net/ogc">
     
 
     return (
+        <>
         <div style={{ display: 'flex' }}>
             {/* Menu latéral */}
             <div style={{ width: '350px', backgroundColor: "#D6D8C7", padding: '10px', borderRight: '1px solid #ccc' }} className="mt-2 p-3 border-2 rounded-5 legend">
@@ -391,7 +417,7 @@ xmlns:ogc="http://www.opengis.net/ogc">
                 <h4 style={{marginTop: "0px"}}>{t("NIVEAU DE RISQUE (1 266)")}</h4>
                     <label>
                         <input type="checkbox" checked={layers.risque_eleve} onChange={() => toggleLayer('risque_eleve')} />
-                        <span style={{fontWeight: "bold", fontSize: "20px"}}><i> {t("Risque élevé (1)")} </i></span>
+                        <span style={{fontWeight: "bold", fontSize: "20px"}} data-toggle="tooltip" data-placement="top" title="Risque élevé (1)" ><i> {t("Risque élevé (1)")} </i></span>
                         <div style={{float: "right", marginRight: "10px"}}> 
                             <span className="superawesome" 
                                 style={{
@@ -510,8 +536,8 @@ xmlns:ogc="http://www.opengis.net/ogc">
             </div>
 
             {/* Map display */}
-            <div style={{flex: 1, position: "relative", height: "90vh", overflow: "hidden"}}>
-                <MapContainer center={[7.54, -5.55]} zoom={6.5} style={{ height: '75vh', width: '100%' }}>
+            <div style={{flex: 1, position: "relative", height: "100vh", overflow: "hidden"}}>
+                <MapContainer center={[7.54, -5.55]} zoom={6.5} style={{ height: '100vh', width: '100%' }}>
                 {/* Définir le basemap en fonction du choix */}
                { layers.ocs_2020 ? (
                     <WMSLayer
@@ -607,7 +633,7 @@ xmlns:ogc="http://www.opengis.net/ogc">
                     <MapPrint />
                 </MapContainer> 
 
-                <div className="bg-white p-3 border-5 rounded-5" style={{ marginTop: "10px", height: "150px", marginBottom: "50px" }}>
+                {/* <div className="bg-white p-3 border-5 rounded-5" style={{ marginTop: "10px", height: "150px", marginBottom: "50px" }}>
                     <ul style={{marginTop: "0px", fontSize: "18px"}}>
                         <li>{t("Parcelles à Risque Elevé : Ensemble des parcelles qui chevauchent une Forêt classée / Parc & Réserve")}
                         </li>
@@ -618,8 +644,9 @@ xmlns:ogc="http://www.opengis.net/ogc">
                         <li>{t("Données Invalides : Ensemble des parcelles ayant des irrégularités de polygones et de positionnement")}
                         </li>
                     </ul>
-                </div>
+                </div> */}
                 { layers.ocs_2020 && (
+                    <>
                 <div id="legend">
                     <h4>LEGENDE</h4>
                     <ul>                    
@@ -630,10 +657,14 @@ xmlns:ogc="http://www.opengis.net/ogc">
                         )))}
                     </ul>
                 </div>
+              
+                </>
                 )}
                  
             </div>
         </div>
+        { layers.ocs_2020 && isDeleteModalOpen && <CompositionParcellaire key={codeParcelle} codeParcelle={codeParcelle} size="lg" show={isDeleteModalOpen} onClose={() => {setDeleteModalOpen(false)}} />}
+            </>
     );
 };
 
